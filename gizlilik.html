@@ -1,0 +1,89 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+:root{
+  --bg:#12100D; --surface:#1C1913; --ink:#F3F0E9; --muted:#B9B1A3;
+  --accent:#E4662F; --line:#2B261D;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.65 'Segoe UI',system-ui,-apple-system,'Noto Sans',Arial,sans-serif;
+}
+.wrap{max-width:720px;margin:0 auto;padding:40px 20px 80px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+header .mark{width:44px;height:44px;border-radius:12px;background:var(--surface);
+  display:grid;place-items:center;color:var(--accent);font-size:26px;font-weight:700}
+header b{font-size:20px}
+h1{font-size:30px;line-height:1.25;margin:28px 0 6px}
+h2{font-size:19px;margin:34px 0 8px}
+.date{color:var(--muted);font-size:14px;margin:0 0 28px}
+p,li{color:#DAD4C8}
+a{color:var(--accent)}
+ul{padding-left:20px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:20px 0}
+.box strong{color:var(--ink)}
+nav{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:14px}
+nav a{margin-right:18px}
+footer{margin-top:40px;color:#8C857A;font-size:13px}
+</style><title>Gizlilik Politikası · Money Agenda</title></head><body>
+<div class="wrap"><header><div class="mark">₺</div><b>Money Agenda</b></header>
+<h1>Gizlilik Politikası</h1>
+<p class="date">Son güncelleme: 14 Eylül 2026</p>
+
+<p>Money Agenda (<code>com.moneyagenda.app</code>) kişisel finans ve yükümlülük takibi
+için tasarlanmış bir Android uygulamasıdır. Bu politika, uygulamanın hangi verileri
+işlediğini açıklar.</p>
+
+<div class="box">
+<p><strong>Özet:</strong> Kayıtlarınız varsayılan olarak yalnızca telefonunuzda tutulur.
+Google ile giriş yapmazsanız cihazınızdan hiçbir finansal veri çıkmaz.</p>
+</div>
+
+<h2>Toplanan veriler</h2>
+<p><strong>Giriş yapılmazsa:</strong> Hiçbir veri toplanmaz. Tüm kayıtlar telefonunuzdaki
+yerel veritabanında kalır.</p>
+<p><strong>Google ile giriş yapılırsa</strong> (isteğe bağlı), bulut yedeği için şunlar işlenir:</p>
+<ul>
+<li>Hesap tanımlayıcısı: Google hesabınızın e-posta adresi ve kullanıcı kimliği (uid)</li>
+<li>Uygulama içi kayıtlarınız: işlemler, hesaplar, kartlar, taksitler, krediler,
+abonelikler, bütçeler ve kategoriler</li>
+</ul>
+
+<h2>Verinin nerede tutulduğu</h2>
+<p>Bulut yedeği Google Firebase (Firestore) üzerinde saklanır. Veriler Google Cloud'un
+Avrupa bölgesinde barındırılır. Erişim, yalnızca kendi hesabınıza ait kayıtlarla
+sınırlıdır; güvenlik kuralları başka bir kullanıcının verisine erişimi engeller.</p>
+
+<h2>Paylaşım ve kullanım amacı</h2>
+<ul>
+<li>Verileriniz <strong>üçüncü taraflarla paylaşılmaz</strong>, satılmaz.</li>
+<li>Reklam gösterilmez; veri reklam amacıyla kullanılmaz.</li>
+<li><strong>Analitik veya çökme raporlama servisi kullanılmaz.</strong> Hiçbir tutar,
+kart adı veya kişi adı herhangi bir servise gönderilmez.</li>
+<li>Veriler yalnızca size ait yedeğin saklanması ve cihazlarınız arasında
+eşitlenmesi için işlenir.</li>
+</ul>
+
+<h2>İzinler</h2>
+<ul>
+<li><strong>Bildirimler:</strong> ödeme günü hatırlatmaları için</li>
+<li><strong>Tam zamanlı alarm:</strong> hatırlatmanın doğru saatte çıkması için</li>
+<li><strong>İnternet:</strong> yalnızca bulut yedeği ve döviz kuru bilgisi için</li>
+</ul>
+<p>Uygulama SMS okuma izni istemez ve bankacılık uygulamalarınıza bağlanmaz.</p>
+
+<h2>Saklama ve silme</h2>
+<p>Bulut yedeğiniz, siz silene kadar saklanır. Silme iki yolla yapılabilir:</p>
+<ul>
+<li>Uygulama içinde: <strong>Ayarlar → Hesap ve bulut yedeği → Hesabımı sil</strong></li>
+<li><a href="hesap-silme.html">Hesap silme sayfası</a> üzerinden talep</li>
+</ul>
+<p>Hesap silindiğinde buluttaki kayıtlarınız kaldırılır; telefonunuzdaki yerel
+kayıtlarınız durmaya devam eder.</p>
+
+<h2>Çocukların gizliliği</h2>
+<p>Uygulama 13 yaş altındaki kullanıcılara yönelik değildir ve bilerek bu yaş grubundan
+veri toplamaz.</p>
+
+<h2>İletişim</h2>
+<p>Sorularınız için: <a href="mailto:yzcdev@gmail.com">yzcdev@gmail.com</a></p>
+<nav><a href="index.html">Ana sayfa</a><a href="gizlilik.html">Gizlilik</a><a href="kosullar.html">Koşullar</a><a href="hesap-silme.html">Hesap silme</a></nav><footer>Money Agenda · com.moneyagenda.app · iletişim: <a href="mailto:yzcdev@gmail.com">yzcdev@gmail.com</a></footer></div></body></html>
