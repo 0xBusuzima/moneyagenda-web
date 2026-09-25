@@ -1,0 +1,110 @@
+---
+/**
+ * SSS listesi.
+ *
+ * `<details>` kullanılıyor: açılır kapanır davranış tarayıcının kendisinde, JavaScript
+ * yok. Ayrıca içerik DOM'da baştan var — arama motoru cevabı görüyor, kullanıcı da
+ * Ctrl+F ile bulabiliyor. Betikle gizlenen SSS'lerde ikisi de kaybolur.
+ *
+ * Şema (FAQPage) sayfanın kendisinde üretiliyor; aynı diziden beslendiği için
+ * ekranda yazan ile arama motoruna söylenen ayrışamaz.
+ */
+export interface QA {
+  q: string;
+  a: string;
+}
+
+interface Props {
+  items: QA[];
+  title?: string;
+}
+
+const { items, title } = Astro.props;
+---
+
+<section class="faq section" aria-labelledby={title ? 'faq-title' : undefined}>
+  <div class="wrap">
+    {title && <h2 id="faq-title">{title}</h2>}
+    <div class="list">
+      {
+        items.map((item) => (
+          <details>
+            <summary>
+              <span>{item.q}</span>
+              <span class="sign" aria-hidden="true" />
+            </summary>
+            <div class="answer" set:html={item.a} />
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .list {
+    margin-top: var(--space-xl);
+    max-width: var(--measure);
+    border-top: 1px solid var(--divider);
+  }
+
+  details {
+    border-bottom: 1px solid var(--divider);
+  }
+
+  summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-l);
+    padding: var(--space-l) 0;
+    font-weight: 600;
+    font-size: 1.03rem;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .sign {
+    position: relative;
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+  }
+
+  .sign::before,
+  .sign::after {
+    content: '';
+    position: absolute;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: transform 0.18s ease;
+  }
+
+  .sign::before {
+    inset: 6px 0;
+    height: 2px;
+  }
+
+  .sign::after {
+    inset: 0 6px;
+    width: 2px;
+  }
+
+  details[open] .sign::after {
+    transform: scaleY(0);
+  }
+
+  .answer {
+    padding-bottom: var(--space-l);
+    color: var(--ink-muted);
+    max-width: 62ch;
+  }
+
+  .answer :global(a) {
+    color: var(--accent);
+  }
+</style>

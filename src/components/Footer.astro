@@ -1,0 +1,147 @@
+---
+import { ROUTES, SITE, t, type Lang } from '../config';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const year = new Date().getFullYear();
+
+const product = [
+  ['features', t(lang, 'nav_features')],
+  ['why', t(lang, 'nav_why')],
+  ['tools', t(lang, 'nav_tools')],
+  ['blog', t(lang, 'nav_blog')],
+  ['releases', t(lang, 'footer_releases')],
+  ['press', t(lang, 'footer_press')],
+] as const;
+
+const legal = [
+  ['privacy', t(lang, 'footer_privacy')],
+  ['terms', t(lang, 'footer_terms')],
+  ['deleteAccount', t(lang, 'footer_delete')],
+  ['support', t(lang, 'nav_support')],
+] as const;
+---
+
+<footer class="site-foot">
+  <div class="wrap grid">
+    <div class="about">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">₺</span>
+        <b>{SITE.name}</b>
+      </div>
+      <p class="muted note">{t(lang, 'footer_note')}</p>
+      <a class="play" href={SITE.playUrl} rel="noopener">{t(lang, 'cta')}</a>
+    </div>
+
+    <nav aria-labelledby="foot-product">
+      <h2 id="foot-product" class="eyebrow">{t(lang, 'footer_product')}</h2>
+      <ul>
+        {product.map(([key, label]) => <li><a href={ROUTES[key][lang]}>{label}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-labelledby="foot-legal">
+      <h2 id="foot-legal" class="eyebrow">{t(lang, 'footer_legal')}</h2>
+      <ul>
+        {legal.map(([key, label]) => <li><a href={ROUTES[key][lang]}>{label}</a></li>)}
+        <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="wrap bottom">
+    <span class="faint">© {year} {SITE.name}</span>
+    <span class="faint mono">{SITE.packageId}</span>
+  </div>
+</footer>
+
+<style>
+  .site-foot {
+    margin-top: clamp(4rem, 3rem + 6vw, 8rem);
+    border-top: 1px solid var(--divider);
+    padding-block: var(--space-xxl) var(--space-xl);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-xxl);
+    grid-template-columns: 1fr;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: var(--space-m);
+  }
+
+  .mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .note {
+    max-width: 34ch;
+    font-size: 0.93rem;
+    margin-bottom: var(--space-l);
+  }
+
+  .play {
+    display: inline-block;
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-pill);
+    padding: 9px 18px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .play:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  ul {
+    list-style: none;
+    margin: var(--space-m) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  ul a {
+    text-decoration: none;
+    color: var(--ink-muted);
+    font-size: 0.93rem;
+  }
+
+  ul a:hover {
+    color: var(--accent);
+  }
+
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-l);
+    flex-wrap: wrap;
+    margin-top: var(--space-xxl);
+    padding-top: var(--space-l);
+    border-top: 1px solid var(--divider);
+    font-size: 0.82rem;
+  }
+
+  @media (min-width: 720px) {
+    .grid {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+</style>

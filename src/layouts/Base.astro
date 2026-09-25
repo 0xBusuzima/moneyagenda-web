@@ -1,0 +1,120 @@
+---
+/**
+ * Her sayfanın taşıyıcısı: dil, SEO başlıkları, hreflang, yapılandırılmış veri.
+ *
+ * SEO burada merkezileşiyor. Sayfa başına elle `<meta>` yazılsaydı biri unutulurdu ve
+ * unutulan meta sessizce kaybolur — hata vermez, sadece o sayfa aramada görünmez.
+ */
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/tokens.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE, LOCALE_TAG, ROUTES, absolute, t, type Lang, type RouteKey } from '../config';
+
+interface Props {
+  lang: Lang;
+  /** Hangi sayfa olduğumuz — hreflang ve gezinmedeki etkin bağlantı bundan çıkıyor. */
+  route: RouteKey;
+  title: string;
+  description: string;
+  /** Sayfaya özel OG görseli; verilmezse markanın varsayılanı. */
+  image?: string;
+  /** Blog yazıları gibi kendi adresi olan ama ROUTES'ta yeri olmayan sayfalar için. */
+  pathOverride?: string;
+  /** Sayfaya özel JSON-LD nesneleri. */
+  schema?: unknown[];
+  /** Arama sonuçlarında görünmesi istenmeyen sayfalar (404 gibi). */
+  noindex?: boolean;
+}
+
+const {
+  lang,
+  route,
+  title,
+  description,
+  image = '/og/default.png',
+  pathOverride,
+  schema = [],
+  noindex = false,
+} = Astro.props;
+
+const path = pathOverride ?? ROUTES[route][lang];
+const canonical = absolute(path);
+const ogImage = absolute(image);
+const other: Lang = lang === 'tr' ? 'en' : 'tr';
+const otherPath = pathOverride ? null : ROUTES[route][other];
+
+// Başlıkta markayı iki kez tekrarlamıyoruz: ana sayfa zaten adla başlıyor.
+const fullTitle = route === 'home' ? title : `${title} · ${SITE.name}`;
+
+const graph = [
+  {
+    '@type': 'WebSite',
+    '@id': `${SITE.domain}/#website`,
+    url: SITE.domain,
+    name: SITE.name,
+    inLanguage: LOCALE_TAG[lang],
+    publisher: { '@id': `${SITE.domain}/#org` },
+  },
+  {
+    '@type': 'Organization',
+    '@id': `${SITE.domain}/#org`,
+    name: SITE.name,
+    url: SITE.domain,
+    logo: absolute('/brand/icon-512.png'),
+    email: SITE.email,
+  },
+  ...schema,
+];
+---
+
+<!doctype html>
+<html lang={lang} data-theme-default>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    {/* Dil alternatifleri. x-default Türkçeye gidiyor: ürün Türkiye'ye özgü. */}
+    {otherPath && <link rel="alternate" hreflang={LOCALE_TAG[lang]} href={canonical} />}
+    {otherPath && <link rel="alternate" hreflang={LOCALE_TAG[other]} href={absolute(otherPath)} />}
+    {otherPath && <link rel="alternate" hreflang="x-default" href={absolute(ROUTES[route].tr)} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={LOCALE_TAG[lang].replace('-', '_')} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#f3f0e9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#12100d" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/brand/icon-180.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name} — Blog`} href="/blog/rss.xml" />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })} />
+
+    <slot name="head" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">{t(lang, 'skip')}</a>
+    <Header lang={lang} active={route} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+  </body>
+</html>

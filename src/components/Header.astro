@@ -1,0 +1,194 @@
+---
+/**
+ * Üst gezinme.
+ *
+ * Mobil menü `<details>` ile açılıyor — JavaScript yok. Pazarlama sitesinin menüsü,
+ * betik yüklenmeden önce de çalışmalı; kullanıcı yavaş bağlantıda ilk dokunuşta
+ * tepkisiz bir düğmeyle karşılaşmasın.
+ */
+import { NAV, ROUTES, SITE, t, type Lang, type RouteKey } from '../config';
+
+interface Props {
+  lang: Lang;
+  active: RouteKey;
+}
+
+const { lang, active } = Astro.props;
+const other: Lang = lang === 'tr' ? 'en' : 'tr';
+const home = ROUTES.home[lang];
+const otherHref = ROUTES[active]?.[other] ?? ROUTES.home[other];
+---
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href={home} aria-label={SITE.name}>
+      <span class="mark" aria-hidden="true">₺</span>
+      <span class="brand-name">{SITE.name}</span>
+    </a>
+
+    <details class="menu">
+      <summary aria-label="Menü">
+        <span class="bars" aria-hidden="true"></span>
+      </summary>
+
+      <nav class="links" aria-label={SITE.name}>
+        {
+          NAV.map((key) => (
+            <a href={ROUTES[key][lang]} aria-current={active === key ? 'page' : undefined}>
+              {t(lang, `nav_${key}`)}
+            </a>
+          ))
+        }
+        <a class="lang" href={otherHref} hreflang={other} rel="alternate">{t(lang, 'lang_other')}</a>
+        <a class="cta" href={SITE.playUrl} rel="noopener">{t(lang, 'cta_short')}</a>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-head {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--divider);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-l);
+    min-height: 64px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    color: var(--accent);
+    font-size: 19px;
+    font-weight: 700;
+  }
+
+  .brand-name {
+    font-size: 1.02rem;
+  }
+
+  .menu summary {
+    list-style: none;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-inline-start: auto;
+    border-radius: var(--radius-chip);
+  }
+
+  .menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .bars,
+  .bars::before,
+  .bars::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--ink);
+    border-radius: 2px;
+  }
+
+  .bars {
+    position: relative;
+  }
+
+  .bars::before,
+  .bars::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .bars::before {
+    top: -6px;
+  }
+
+  .bars::after {
+    top: 6px;
+  }
+
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-m) 0 var(--space-l);
+  }
+
+  .links a {
+    text-decoration: none;
+    color: var(--ink-muted);
+    font-size: 0.96rem;
+    font-weight: 500;
+    padding: 10px 2px;
+    border-radius: 8px;
+  }
+
+  .links a[aria-current='page'] {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .links a:hover {
+    color: var(--ink);
+  }
+
+  .lang {
+    color: var(--ink-faint) !important;
+  }
+
+  .cta {
+    align-self: flex-start;
+    background: var(--ink);
+    color: var(--on-ink) !important;
+    padding: 10px 18px !important;
+    border-radius: var(--radius-pill);
+    font-weight: 600 !important;
+  }
+
+  @media (min-width: 860px) {
+    .menu {
+      display: contents;
+    }
+
+    .menu summary {
+      display: none;
+    }
+
+    .links {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-xl);
+      padding: 0;
+    }
+
+    .links a {
+      padding: 6px 0;
+    }
+  }
+</style>

@@ -1,0 +1,362 @@
+---
+/**
+ * Ana sayfanın sunumu. Metin `src/copy/home.ts`'den geliyor, burada yalnızca yerleşim var.
+ *
+ * İkisi ayrı çünkü Türkçe ve İngilizce ana sayfa aynı yapıyı paylaşıyor. Sayfa iki kez
+ * yazılsaydı biri düzeltilip diğeri unutulurdu ve bunu fark etmek için birinin
+ * İngilizce sayfayı açması gerekirdi.
+ */
+import Base from '../layouts/Base.astro';
+import Faq from './Faq.astro';
+import { SITE, ROUTES, t, type Lang } from '../config';
+import type { HomeCopy } from '../copy/home';
+
+interface Props {
+  lang: Lang;
+  copy: HomeCopy;
+}
+
+const { lang, copy } = Astro.props;
+
+const schema = [
+  {
+    '@type': 'SoftwareApplication',
+    name: SITE.name,
+    operatingSystem: 'Android 8.0+',
+    applicationCategory: 'FinanceApplication',
+    url: SITE.domain,
+    downloadUrl: SITE.playUrl,
+    installUrl: SITE.playUrl,
+    inLanguage: ['tr-TR', 'en-US'],
+    // Fiyat: uygulama ücretsiz. Pro ayrı bir satın alma ve fiyatı bölgeye göre
+    // değiştiği için buraya tek bir rakam yazmak yanıltıcı olurdu.
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'TRY' },
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: copy.faq.items.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a.replace(/<[^>]+>/g, '') },
+    })),
+  },
+];
+---
+
+<Base
+  lang={lang}
+  route="home"
+  title={copy.meta.title}
+  description={copy.meta.description}
+  schema={schema}
+>
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">{copy.hero.eyebrow}</p>
+      <h1>{copy.hero.h1}</h1>
+      <p class="lead">{copy.hero.lead}</p>
+
+      <div class="actions">
+        <a class="btn-primary" href={SITE.playUrl} rel="noopener">{t(lang, 'cta')}</a>
+        <a class="btn-ghost" href={ROUTES.features[lang]}>{t(lang, 'nav_features')}</a>
+      </div>
+
+      <ul class="trust">
+        {copy.hero.trust.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section stance">
+    <div class="wrap">
+      <h2>{copy.stance.title}</h2>
+      <p class="lead prose">{copy.stance.body}</p>
+      <div class="points">
+        {
+          copy.stance.points.map((p, i) => (
+            <div class="point">
+              <span class="num mono">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{p.t}</h3>
+              <p class="muted">{p.d}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>{copy.features.title}</h2>
+      <p class="lead prose muted">{copy.features.lead}</p>
+      <div class="cards">
+        {
+          copy.features.items.map((f) => (
+            <a class="feature card" href={f.href}>
+              <h3>{f.t}</h3>
+              <p class="muted">{f.d}</p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section screens">
+    <div class="wrap">
+      <h2>{copy.screens.title}</h2>
+      <p class="lead prose muted">{copy.screens.lead}</p>
+      <div class="shots">
+        {
+          copy.screens.shots.map((s, i) => (
+            <figure>
+              <img
+                src={`/screens/${s.file}-420.webp`}
+                srcset={`/screens/${s.file}-420.webp 420w, /screens/${s.file}-840.webp 840w`}
+                sizes="(min-width: 900px) 260px, 60vw"
+                width="420"
+                height="933"
+                alt={s.alt}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section split">
+    <div class="wrap grid2">
+      <div>
+        <h2>{copy.local.title}</h2>
+        <p class="muted">{copy.local.body}</p>
+      </div>
+      <ul class="checks">
+        {copy.local.bullets.map((b) => <li>{b}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section split">
+    <div class="wrap grid2">
+      <div>
+        <h2>{copy.privacy.title}</h2>
+        <p class="muted">{copy.privacy.body}</p>
+      </div>
+      <ul class="checks">
+        {copy.privacy.bullets.map((b) => <li>{b}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <Faq items={copy.faq.items} title={copy.faq.title} />
+
+  <section class="section">
+    <div class="wrap close card">
+      <h2>{copy.close.title}</h2>
+      <p class="muted">{copy.close.body}</p>
+      <a class="btn-primary" href={SITE.playUrl} rel="noopener">{t(lang, 'cta')}</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(3.5rem, 2rem + 8vw, 7rem) clamp(2.5rem, 2rem + 4vw, 4rem);
+  }
+
+  .hero h1 {
+    margin-top: var(--space-m);
+    max-width: 17ch;
+  }
+
+  .lead {
+    font-size: clamp(1.02rem, 0.98rem + 0.3vw, 1.18rem);
+    margin-top: var(--space-l);
+    max-width: 58ch;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+    margin-top: var(--space-xl);
+  }
+
+  .btn-primary,
+  .btn-ghost {
+    display: inline-block;
+    border-radius: var(--radius-pill);
+    padding: 13px 26px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.97rem;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.06);
+  }
+
+  .btn-ghost {
+    border: 1px solid var(--divider);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .trust {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-xl) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m) var(--space-xl);
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+  }
+
+  .trust li::before {
+    content: '✓';
+    color: var(--accent);
+    font-weight: 700;
+    margin-right: 8px;
+  }
+
+  .stance {
+    background: var(--surface);
+    border-block: 1px solid var(--divider);
+  }
+
+  .points {
+    display: grid;
+    gap: var(--space-xl);
+    margin-top: var(--space-xxl);
+    grid-template-columns: 1fr;
+  }
+
+  .num {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .point h3 {
+    margin: var(--space-s) 0 var(--space-xs);
+  }
+
+  .cards {
+    display: grid;
+    gap: var(--space-l);
+    margin-top: var(--space-xxl);
+    grid-template-columns: 1fr;
+  }
+
+  .feature {
+    text-decoration: none;
+    transition: border-color 0.16s ease, transform 0.16s ease;
+  }
+
+  .feature:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .feature h3 {
+    margin-bottom: var(--space-s);
+  }
+
+  .shots {
+    display: grid;
+    gap: var(--space-l);
+    margin-top: var(--space-xxl);
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .shots figure {
+    margin: 0;
+  }
+
+  .shots img {
+    width: 100%;
+    border-radius: var(--radius-inner);
+    border: 1px solid var(--divider);
+  }
+
+  .grid2 {
+    display: grid;
+    gap: var(--space-xl);
+    grid-template-columns: 1fr;
+  }
+
+  .checks {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .checks li {
+    padding-left: 30px;
+    position: relative;
+    color: var(--ink-muted);
+  }
+
+  .checks li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 14px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .close {
+    text-align: center;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-m);
+    padding-block: clamp(2.5rem, 2rem + 4vw, 4rem);
+  }
+
+  .close p {
+    max-width: 44ch;
+  }
+
+  .close a {
+    margin-top: var(--space-s);
+  }
+
+  @media (min-width: 760px) {
+    .points {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .shots {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .grid2 {
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--space-xxl);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .cards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
