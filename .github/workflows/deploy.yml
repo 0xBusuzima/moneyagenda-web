@@ -33,6 +33,8 @@ jobs:
         run: node scripts/check-links.mjs
       - name: Hesaplayici portu Kotlin motoruyla ayni mi
         run: npm test
+      - name: Metinlerde yabanci alfabe karakteri denetimi
+        run: node scripts/check-text.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

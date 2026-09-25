@@ -10,7 +10,7 @@
     "check": "astro check",
     "assets": "node scripts/assets.mjs",
     "test": "node tests/vectors.test.mjs",
-    "verify": "npm run build && node scripts/check-links.mjs && npm test"
+    "verify": "npm run build && node scripts/check-links.mjs && npm test && node scripts/check-text.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",

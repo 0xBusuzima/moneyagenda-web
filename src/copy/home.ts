@@ -191,32 +191,32 @@ export const HOME: Record<'tr' | 'en', HomeCopy> = {
         {
           t: 'Credit cards',
           d: 'Statement and due dates, billing cycles, minimum payment, balance and remaining limit.',
-          href: '/en/features/',
+          href: '/en/features/credit-cards/',
         },
         {
           t: 'Instalments and loans',
           d: 'Instalment plans, loan amortisation, and effective cost including Turkish BSMV/KKDF levies.',
-          href: '/en/features/',
+          href: '/en/features/instalments-and-loans/',
         },
         {
           t: 'Subscriptions and renewals',
           d: 'Subscriptions, domains, hosting, SSL, insurance — anything that renews, with its date.',
-          href: '/en/features/',
+          href: '/en/features/subscriptions/',
         },
         {
           t: 'Budgets and reports',
           d: 'Category budgets, goals, monthly reports; export to CSV, XLSX and PDF.',
-          href: '/en/features/',
+          href: '/en/features/budget-and-reports/',
         },
         {
           t: 'Reminders',
           d: 'Alerts before and after the due date, quiet hours, a daily digest, a separate channel per type.',
-          href: '/en/features/',
+          href: '/en/features/reminders/',
         },
         {
           t: 'Security',
           d: 'Encrypted local backup, PIN and fingerprint lock, amount masking.',
-          href: '/en/features/',
+          href: '/en/features/budget-and-reports/',
         },
       ],
     },
