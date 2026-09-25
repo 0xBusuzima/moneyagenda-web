@@ -1,0 +1,154 @@
+---
+import CalcLayout from '../../layouts/CalcLayout.astro';
+---
+
+<CalcLayout
+  title="Taksit planı hesaplama"
+  seoTitle="Taksit hesaplama — taksit tutarı ve vade farkı"
+  description="Taksitli alışverişin aylık tutarını, toplam ödemeyi ve peşin fiyata göre vade farkını hesaplar. Kuruş artığının hangi taksite eklendiğini de gösterir."
+  path="/araclar/taksit-plani-hesaplama/"
+  note="Taksitlerin toplamı toplam borca kuruşu kuruşuna eşittir; bölmeden artan kuruş ilk taksite eklenir — bankaların yaygın davranışı da budur. Bankanız farklı bir dağıtım uygulayabilir."
+>
+  <form slot="form" id="f" autocomplete="off">
+    <div class="field">
+      <label for="tutar">Taksitli fiyat (TL)</label>
+      <input id="tutar" type="number" inputmode="decimal" min="1" step="1" value="12000" />
+      <span class="hint">Kartla taksitlendirilen toplam tutar.</span>
+    </div>
+
+    <div class="field">
+      <label for="adet">Taksit sayısı</label>
+      <input id="adet" type="number" inputmode="numeric" min="1" max="36" step="1" value="12" />
+    </div>
+
+    <div class="field">
+      <label for="pesin">Peşin fiyat (TL)</label>
+      <input id="pesin" type="number" inputmode="decimal" min="0" step="1" value="0" />
+      <span class="hint">Biliyorsanız girin; "faizsiz taksit"in gerçekten faizsiz olup olmadığını gösterir. Bilmiyorsanız 0 bırakın.</span>
+    </div>
+  </form>
+
+  <div slot="result" class="out">
+    <div class="headline">
+      <span class="eyebrow">Aylık taksit</span>
+      <strong class="big" id="taksit">—</strong>
+      <p class="muted" style="margin-top:12px" id="ilknot"></p>
+    </div>
+
+    <div id="uyari"></div>
+
+    <div class="kv">
+      <div><span>Toplam ödeme</span><span id="toplam">—</span></div>
+      <div><span>Vade farkı</span><span id="fark">—</span></div>
+      <div><span>Peşine göre artış</span><span id="artis">—</span></div>
+    </div>
+
+    <details>
+      <summary style="cursor:pointer;font-weight:600;padding:8px 0">Taksit listesi</summary>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th>Taksit</th><th>Tutar</th><th>Kalan</th></tr></thead>
+          <tbody id="liste"></tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <h2>"Faizsiz taksit" gerçekten faizsiz mi</h2>
+
+  <p>
+    Çoğu zaman evet — ama <strong>peşin fiyatı daha düşükse</strong> aradaki fark gizli bir
+    maliyettir. Satıcı taksitli satışta bankaya komisyon ödediği için bunu fiyata yansıtır;
+    peşin alana indirim yapması aynı şeyin diğer yüzüdür.
+  </p>
+
+  <p>
+    Bu yüzden karşılaştırma taksit tutarı üzerinden değil, <strong>toplam ödenen</strong>
+    üzerinden yapılmalı. Peşin fiyatı girdiğinizde yukarıdaki "peşine göre artış" satırı
+    bunu yüzde olarak gösterir.
+  </p>
+
+  <h2>Kuruş artığı nereye gidiyor</h2>
+
+  <p>
+    100 TL'yi 3 taksite bölünce 33,33 × 3 = 99,99 eder. Kaybolan kuruş önemsiz görünür ama
+    "kalan borç" rakamını sonsuza kadar yanlış gösterir. Bu yüzden artan kuruş
+    <strong>ilk taksite</strong> eklenir: fark en başta ödenir, sonda sürpriz çıkmaz.
+  </p>
+
+  <h2>Taksitler bütçeye nasıl biniyor</h2>
+
+  <p>
+    Bir aylık büyük harcama, taksitle birlikte aylar süren sabit bir yükümlülüğe dönüşür.
+    Taksitli alışverişler üst üste binerse aylık taksit toplamınız farkında olmadan ciddi
+    bir tutara ulaşabilir — ve bu tutar her ay ekstrede karşınıza çıkar.
+  </p>
+
+  <p>
+    Bu sayfadaki bölme, Money Agenda uygulamasının taksit motorunun birebir portudur ve
+    uygulamanın test vektörleriyle her yayında doğrulanır. Hesaplama tarayıcınızda çalışır.
+  </p>
+
+  <p>
+    İlgili: <a href="/ozellikler/taksit-ve-kredi/">Taksit ve kredi takibi</a>
+    · <a href="/araclar/kredi-maliyeti-hesaplama/">Kredi maliyeti hesaplama</a>
+  </p>
+</CalcLayout>
+
+<script>
+  import { splitInstallments, money } from '../../lib/finance';
+
+  const $ = (id: string) => document.getElementById(id) as HTMLInputElement;
+  const set = (id: string, text: string) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+
+  function run() {
+    const tutar = Math.round(Number($('tutar').value) * 100);
+    const adet = Math.trunc(Number($('adet').value));
+    const pesin = Math.round(Number($('pesin').value) * 100) || 0;
+
+    if (!(tutar > 0) || !(adet > 0)) {
+      set('taksit', '—');
+      return;
+    }
+
+    const parts = splitInstallments(tutar, adet);
+    const esit = parts.every((p) => p === parts[0]);
+
+    set('taksit', money(parts[parts.length - 1]));
+    set(
+      'ilknot',
+      esit
+        ? `${adet} taksitin hepsi eşit.`
+        : `İlk taksit ${money(parts[0])}, kalan ${adet - 1} taksit ${money(parts[1])}. Bölmeden artan kuruş ilk taksite eklendi.`,
+    );
+    set('toplam', money(tutar));
+
+    if (pesin > 0) {
+      const fark = tutar - pesin;
+      set('fark', money(fark));
+      set('artis', '%' + ((fark / pesin) * 100).toFixed(1).replace('.', ','));
+      document.getElementById('uyari')!.innerHTML =
+        fark > 0
+          ? `<p class="warn">Peşin fiyata göre ${money(fark)} fazla ödüyorsunuz. "Faizsiz" denilse de bu bir vade farkıdır.</p>`
+          : '';
+    } else {
+      set('fark', '—');
+      set('artis', '—');
+      document.getElementById('uyari')!.innerHTML = '';
+    }
+
+    let kalan = tutar;
+    document.getElementById('liste')!.innerHTML = parts
+      .map((p, i) => {
+        kalan -= p;
+        return `<tr><td>${i + 1}</td><td>${money(p)}</td><td>${money(kalan)}</td></tr>`;
+      })
+      .join('');
+  }
+
+  document.getElementById('f')?.addEventListener('input', run);
+  run();
+</script>

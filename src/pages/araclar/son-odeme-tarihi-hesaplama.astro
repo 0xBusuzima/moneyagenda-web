@@ -1,0 +1,177 @@
+---
+import CalcLayout from '../../layouts/CalcLayout.astro';
+---
+
+<CalcLayout
+  title="Kredi kartı son ödeme tarihi hesaplama"
+  seoTitle="Kredi kartı son ödeme tarihi hesaplama — kesim gününden"
+  description="Kartın kesim gününden sonraki 12 ayın kesim ve son ödeme tarihlerini çıkarır. Ayın 29-31'i gibi her ayda bulunmayan günleri doğru kaydırır."
+  path="/araclar/son-odeme-tarihi-hesaplama/"
+  note="Tarihler kartın kendi kurallarıyla hesaplanır. Son ödeme günü hafta sonuna ya da resmî tatile denk gelirse banka tahsilatı o gün yapar; ödemeyi bir iş günü önceden yapmak güvenlidir."
+>
+  <form slot="form" id="f" autocomplete="off">
+    <div class="field">
+      <label for="kesim">Hesap kesim günü</label>
+      <input id="kesim" type="number" inputmode="numeric" min="1" max="31" step="1" value="12" />
+      <span class="hint">Ekstrenizin kapandığı gün. 31 girerseniz "ay sonu" demektir.</span>
+    </div>
+
+    <div class="field">
+      <label for="mod">Son ödeme nasıl belirleniyor?</label>
+      <select id="mod">
+        <option value="OFFSET_DAYS">Kesimden N gün sonra</option>
+        <option value="FIXED_DAY">Ayın sabit bir günü</option>
+      </select>
+    </div>
+
+    <div class="field" id="wrapOffset">
+      <label for="gun">Kesimden kaç gün sonra</label>
+      <input id="gun" type="number" inputmode="numeric" min="1" max="40" step="1" value="10" />
+    </div>
+
+    <div class="field" id="wrapFixed" hidden>
+      <label for="sabit">Son ödeme günü</label>
+      <input id="sabit" type="number" inputmode="numeric" min="1" max="31" step="1" value="5" />
+    </div>
+
+    <div class="field">
+      <label for="harcama">Bu tarihte harcama yaparsam</label>
+      <input id="harcama" type="date" />
+      <span class="hint">Hangi ekstreye düşeceğini ve ne zaman ödeneceğini gösterir.</span>
+    </div>
+  </form>
+
+  <div slot="result" class="out">
+    <div class="headline">
+      <span class="eyebrow">Bu harcama şu tarihte ödenir</span>
+      <strong class="big" id="odeme">—</strong>
+      <p class="muted" style="margin-top:12px" id="aciklama"></p>
+    </div>
+
+    <div id="uyari"></div>
+
+    <div>
+      <p class="eyebrow" style="margin-bottom:10px">Önümüzdeki 12 ay</p>
+      <table class="tbl">
+        <thead><tr><th>Ekstre</th><th>Kesim</th><th>Son ödeme</th><th>Gün</th></tr></thead>
+        <tbody id="takvim"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2>Kesim günü ile son ödeme arasındaki fark</h2>
+
+  <p>
+    <strong>Kesim tarihi</strong>, o dönemki ekstrenin kapandığı gündür; o güne kadarki
+    harcamalar tek bir borçta toplanır. <strong>Son ödeme tarihi</strong>, o borcun
+    gecikmeye düşmeden ödenmesi gereken son gündür.
+  </p>
+
+  <p>
+    Aradaki mesafe bankaya ve karta göre değişir. "Kredi kartlarının son ödemesi kesimden
+    10 gün sonradır" gibi genel bir varsayım işe yaramaz — kendi kartınızın iki tarihini
+    bir kez bakıp girmeniz gerekir.
+  </p>
+
+  <h2>Ayın 29, 30 ve 31'i</h2>
+
+  <p>
+    Kesim günü ayın 31'i olan bir kart şubatta 28'inde (artık yılda 29'unda) keser,
+    1 Mart'a taşınmaz. Hesaplayıcı bu kaydırmayı yapar ve <strong>çapayı korur</strong>:
+    sonraki ay yine 31'inde keser, 28'inde değil. Elle takip edenlerin en sık kaçırdığı
+    ayrıntı budur.
+  </p>
+
+  <h2>Harcamanın hangi ekstreye düştüğü</h2>
+
+  <p>
+    Dönem, bir kesim gününün ertesi günü başlar ve bir sonraki kesim gününde biter —
+    yani aralık <code>(önceki kesim, bu kesim]</code>. <strong>Kesim gününün kendisinde</strong>
+    yapılan harcama o gün kapanan ekstreye girer. Ertesi gün yapılan ise bir sonrakine
+    ve ödemesi neredeyse bir ay ötelenir.
+  </p>
+
+  <p>
+    Pratikte işlemin bankaya yansıma zamanı bunu bozabilir: akşam yapılan bir alışveriş
+    ertesi güne sarkabilir, otel ve akaryakıt gibi yerlerde provizyon sonra kesinleşir.
+    Kritik bir tutarsa kesim gününe denk getirmemek belirsizliği ortadan kaldırır.
+  </p>
+
+  <p>
+    İlgili: <a href="/blog/kredi-karti-kesim-tarihi-nedir/">Kesim tarihi nedir, son ödeme nasıl hesaplanır</a>
+    · <a href="/blog/ekstre-donemi-hangi-harcama/">Bugün yaptığım harcama hangi ekstreye düşer</a>
+    · <a href="/ozellikler/kredi-karti-takibi/">Kredi kartı takibi</a>
+  </p>
+</CalcLayout>
+
+<script>
+  import { statementDate, dueDate, periodOf, periodEndingAt, daysBetween, formatDate, isDueTooClose, MIN_DUE_GAP_DAYS, type CardRules } from '../../lib/finance';
+
+  const $ = (id: string) => document.getElementById(id) as HTMLInputElement;
+  const sel = (id: string) => document.getElementById(id) as HTMLSelectElement;
+  const set = (id: string, text: string) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+
+  const today = new Date();
+  const iso = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  $('harcama').value = iso(today);
+
+  function card(): CardRules | null {
+    const statementDay = Math.trunc(Number($('kesim').value));
+    if (!(statementDay >= 1 && statementDay <= 31)) return null;
+    const mode = sel('mod').value as CardRules['dueMode'];
+    return {
+      statementDay,
+      dueMode: mode,
+      dueDay: Math.trunc(Number($('sabit').value)) || 1,
+      dueOffsetDays: Math.trunc(Number($('gun').value)) || 1,
+    };
+  }
+
+  function run() {
+    const fixed = sel('mod').value === 'FIXED_DAY';
+    document.getElementById('wrapOffset')!.hidden = fixed;
+    document.getElementById('wrapFixed')!.hidden = !fixed;
+
+    const c = card();
+    if (!c) return;
+
+    // Harcamanin dustugu donem
+    const txn = $('harcama').value || iso(today);
+    const p = periodOf(c, txn);
+    set('odeme', formatDate(p.dueDate));
+    set(
+      'aciklama',
+      `${formatDate(txn)} tarihli harcama, ${formatDate(p.statementDate)} tarihinde kesilen ekstreye düşer. Son ödemeye ${daysBetween(txn, p.dueDate)} gün var.`,
+    );
+
+    // Kisa vade uyarisi
+    const uyari = document.getElementById('uyari')!;
+    uyari.innerHTML = isDueTooClose(c)
+      ? `<p class="warn">Kesim ile son ödeme arasında ${MIN_DUE_GAP_DAYS} günden az var. Bazı bankalarda gerçekten böyle olabiliyor, ama kart ayarını bir kontrol edin.</p>`
+      : '';
+
+    // Onumuzdeki 12 ay
+    const rows: string[] = [];
+    const base = new Date(today.getFullYear(), today.getMonth(), 1);
+    for (let i = 0; i < 12; i++) {
+      const y = base.getFullYear() + Math.floor((base.getMonth() + i) / 12);
+      const m = ((base.getMonth() + i) % 12) + 1;
+      const cut = statementDate(c, y, m);
+      const per = periodEndingAt(c, cut);
+      const label = new Intl.DateTimeFormat('tr-TR', { month: 'long', year: 'numeric', timeZone: 'UTC' })
+        .format(new Date(Date.UTC(y, m - 1, 1)));
+      rows.push(
+        `<tr><td>${label}</td><td>${formatDate(cut)}</td><td>${formatDate(per.dueDate)}</td><td>${daysBetween(cut, per.dueDate)}</td></tr>`,
+      );
+    }
+    document.getElementById('takvim')!.innerHTML = rows.join('');
+  }
+
+  document.getElementById('f')?.addEventListener('input', run);
+  document.getElementById('f')?.addEventListener('change', run);
+  run();
+</script>

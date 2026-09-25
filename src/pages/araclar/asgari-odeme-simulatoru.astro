@@ -1,0 +1,241 @@
+---
+import CalcLayout from '../../layouts/CalcLayout.astro';
+---
+
+<CalcLayout
+  title="Asgari ödeme simülatörü"
+  seoTitle="Asgari ödeme hesaplama — borç ne kadar sürede biter"
+  description="Sadece asgari ödemeyi yaparsanız kredi kartı borcu ne kadar sürede biter ve toplamda ne kadar faiz ödersiniz? Ay ay simüle eder."
+  path="/araclar/asgari-odeme-simulatoru/"
+  note="Asgari ödeme oranı ve kredi kartı faiz oranı mevzuatla belirlenir ve değişir; buradaki değerler varsayılan örnektir. Kendi ekstrenizde yazan oranları girin. Bankalar gecikme, nakit avans ve farklı gün sayımı gibi durumlarda farklı hesaplayabilir."
+>
+  <form slot="form" id="f" autocomplete="off">
+    <div class="field">
+      <label for="borc">Kart borcu (TL)</label>
+      <input id="borc" type="number" inputmode="decimal" min="1" step="1" value="20000" />
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label for="faiz">Aylık faiz (%)</label>
+        <input id="faiz" type="number" inputmode="decimal" min="0" step="0.01" value="4" />
+      </div>
+      <div class="field">
+        <label for="asgarioran">Asgari oran (%)</label>
+        <input id="asgarioran" type="number" inputmode="decimal" min="1" max="100" step="1" value="20" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="yeni">Her ay yeni harcama (TL)</label>
+      <input id="yeni" type="number" inputmode="decimal" min="0" step="1" value="0" />
+      <span class="hint">Devreden bakiyesi olan bir kartı kullanmaya devam ederseniz.</span>
+    </div>
+
+    <div class="field">
+      <label for="ekstra">Asgarinin üstüne ekleyeceğim (TL)</label>
+      <input id="ekstra" type="number" inputmode="decimal" min="0" step="1" value="0" />
+      <span class="hint">Karşılaştırma için: her ay asgariye ek olarak bu kadar ödeseniz.</span>
+    </div>
+  </form>
+
+  <div slot="result" class="out">
+    <div class="headline">
+      <span class="eyebrow">Sadece asgariyi ödersen borç</span>
+      <strong class="big" id="sure">—</strong>
+      <p class="muted" style="margin-top:12px" id="ozet"></p>
+    </div>
+
+    <div id="uyari"></div>
+
+    <div class="kv">
+      <div><span>İlk ay asgari ödeme</span><span id="ilkasgari">—</span></div>
+      <div><span>Toplam ödenecek</span><span id="toplam">—</span></div>
+      <div><span>Toplam faiz</span><span id="toplamfaiz">—</span></div>
+      <div><span>Faiz / anapara oranı</span><span id="oran">—</span></div>
+    </div>
+
+    <div id="karsilastirma"></div>
+
+    <details>
+      <summary style="cursor:pointer;font-weight:600;padding:8px 0">Ay ay tablo</summary>
+      <div class="scroll">
+        <table class="tbl">
+          <thead><tr><th>Ay</th><th>Dönem başı</th><th>Faiz</th><th>Ödenen</th><th>Ay sonu</th></tr></thead>
+          <tbody id="tablo"></tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <h2>Asgari ödeme borcu kapatmaz</h2>
+
+  <p>
+    Asgari ödeme, kartın kapatılmaması ve gecikmeye düşülmemesi için ödemeniz gereken en
+    küçük tutardır. <strong>Gecikmeyi önler, borcu kapatmaz.</strong> Kalan bakiye devreder
+    ve o bakiyeye faiz işlemeye devam eder.
+  </p>
+
+  <p>
+    Asgari oran kalan borcun yüzdesi olduğu için ödediğiniz tutar her ay küçülür. Borç
+    matematiksel olarak azalır ama uzun bir kuyruk bırakır — yukarıdaki tabloda bunu ay ay
+    görebilirsiniz. Her ay yeni harcama da eklerseniz bakiye hiç düşmeyebilir.
+  </p>
+
+  <h2>Simülasyon nasıl çalışıyor</h2>
+
+  <p>Her ay sırasıyla:</p>
+
+  <ol>
+    <li>Dönem başı bakiyeye faiz işler</li>
+    <li>Asgari ödeme, faiz eklendikten sonraki borç üzerinden hesaplanır</li>
+    <li>Ödeme düşülür</li>
+    <li>Varsa yeni harcama eklenir</li>
+  </ol>
+
+  <p>
+    Bakiye küçüldükçe asgari tutar da küçülür ve bir noktada kuruşun altına iner. Simülasyon
+    o noktada kalanı kapatır — aksi hâlde borç sonsuza kadar birkaç kuruş olarak kalırdı.
+    Bankalar da böyle davranmaz.
+  </p>
+
+  <p>
+    Asgari ödeme tutarının hesabı Money Agenda uygulamasının kendi motorundan gelir ve
+    uygulamanın test vektörleriyle her yayında doğrulanır. <strong>Ay ay simülasyon ise
+    yalnızca bu sayfada var</strong> — uygulama bunu yapmıyor, çünkü orada gerçek ekstre
+    tutarlarınız kullanılıyor.
+  </p>
+
+  <p>
+    Hesaplama tarayıcınızda çalışır; girdiğiniz hiçbir rakam sunucuya gönderilmez.
+  </p>
+
+  <p>
+    İlgili: <a href="/blog/asgari-odeme-tuzagi/">Asgari ödeme tuzağı</a>
+    · <a href="/ozellikler/kredi-karti-takibi/">Kredi kartı takibi</a>
+  </p>
+</CalcLayout>
+
+<script>
+  import { minimumPayment, money } from '../../lib/finance';
+
+  const MAX_AY = 600;
+
+  const $ = (id: string) => document.getElementById(id) as HTMLInputElement;
+  const set = (id: string, text: string) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+
+  interface Sonuc {
+    ay: number;
+    toplamOdenen: number;
+    toplamFaiz: number;
+    ilkAsgari: number;
+    bitti: boolean;
+    satirlar: string[];
+  }
+
+  function simule(borc: number, faizOran: number, asgariOran: number, yeni: number, ekstra: number): Sonuc {
+    let bakiye = borc;
+    let toplamOdenen = 0;
+    let toplamFaiz = 0;
+    let ilkAsgari = 0;
+    const satirlar: string[] = [];
+
+    for (let ay = 1; ay <= MAX_AY; ay++) {
+      const basi = bakiye;
+      const faiz = Math.round(bakiye * faizOran);
+      bakiye += faiz;
+
+      const asgari = minimumPayment(bakiye, asgariOran);
+      // Bakiye kuculdukce asgari 0 kurusa yuvarlanir ve odeme durur; borc sonsuza
+      // kadar 1 kurus olarak kalirdi. Banka da boyle davranmaz - kalan kapatilir.
+      const hesaplanan = asgari + ekstra;
+      const odeme = hesaplanan <= 0 ? bakiye : Math.min(bakiye, hesaplanan);
+      if (ay === 1) ilkAsgari = asgari;
+
+      bakiye -= odeme;
+      toplamOdenen += odeme;
+      toplamFaiz += faiz;
+
+      if (satirlar.length < 240) {
+        satirlar.push(
+          `<tr><td>${ay}</td><td>${money(basi)}</td><td>${money(faiz)}</td><td>${money(odeme)}</td><td>${money(Math.max(bakiye, 0))}</td></tr>`,
+        );
+      }
+
+      if (bakiye <= 0) return { ay, toplamOdenen, toplamFaiz, ilkAsgari, bitti: true, satirlar };
+
+      bakiye += yeni;
+
+      // Odeme faizi karsilamiyorsa borc buyuyor; sonsuza kadar donmenin anlami yok.
+      if (bakiye >= basi && ay > 12) {
+        return { ay, toplamOdenen, toplamFaiz, ilkAsgari, bitti: false, satirlar };
+      }
+    }
+    return { ay: MAX_AY, toplamOdenen, toplamFaiz, ilkAsgari, bitti: false, satirlar };
+  }
+
+  function sureMetni(ay: number): string {
+    const yil = Math.floor(ay / 12);
+    const kalan = ay % 12;
+    if (yil === 0) return `${kalan} ayda biter`;
+    if (kalan === 0) return `${yil} yılda biter`;
+    return `${yil} yıl ${kalan} ayda biter`;
+  }
+
+  function run() {
+    const borc = Math.round(Number($('borc').value) * 100);
+    const faizOran = Number($('faiz').value) / 100;
+    const asgariOran = Number($('asgarioran').value) / 100;
+    const yeni = Math.round(Number($('yeni').value) * 100) || 0;
+    const ekstra = Math.round(Number($('ekstra').value) * 100) || 0;
+
+    if (!(borc > 0) || !(asgariOran > 0)) {
+      set('sure', '—');
+      return;
+    }
+
+    const sadece = simule(borc, faizOran, asgariOran, yeni, 0);
+
+    set('sure', sadece.bitti ? sureMetni(sadece.ay) : 'hiç bitmiyor');
+    set(
+      'ozet',
+      sadece.bitti
+        ? `${sadece.ay} ay boyunca ödeme yaparsınız ve toplamda ${money(sadece.toplamFaiz)} faiz ödersiniz.`
+        : 'Ödediğiniz tutar işleyen faizi ve yeni harcamayı karşılamıyor; bakiye küçülmüyor.',
+    );
+    set('ilkasgari', money(sadece.ilkAsgari));
+    set('toplam', money(sadece.toplamOdenen));
+    set('toplamfaiz', money(sadece.toplamFaiz));
+    set('oran', '%' + ((sadece.toplamFaiz / borc) * 100).toFixed(1).replace('.', ','));
+
+    document.getElementById('uyari')!.innerHTML = sadece.bitti
+      ? ''
+      : '<p class="warn">Bu koşullarda borç kapanmıyor. Yeni harcamayı durdurmak ya da asgarinin üstüne ödeme eklemek gerekiyor.</p>';
+
+    // Ekstra odeme karsilastirmasi
+    const kutu = document.getElementById('karsilastirma')!;
+    if (ekstra > 0) {
+      const ek = simule(borc, faizOran, asgariOran, yeni, ekstra);
+      const farkFaiz = sadece.toplamFaiz - ek.toplamFaiz;
+      kutu.innerHTML = `<div class="headline">
+        <span class="eyebrow">Her ay ${money(ekstra)} fazla ödersen</span>
+        <strong class="big">${ek.bitti ? sureMetni(ek.ay) : 'hiç bitmiyor'}</strong>
+        <p class="muted" style="margin-top:12px">${
+          ek.bitti && sadece.bitti
+            ? `${sadece.ay - ek.ay} ay daha kısa ve ${money(farkFaiz)} daha az faiz.`
+            : 'Bu koşullarda da kapanmıyor.'
+        }</p>
+      </div>`;
+    } else {
+      kutu.innerHTML = '';
+    }
+
+    document.getElementById('tablo')!.innerHTML = sadece.satirlar.join('');
+  }
+
+  document.getElementById('f')?.addEventListener('input', run);
+  run();
+</script>

@@ -1,0 +1,165 @@
+---
+import CalcLayout from '../../layouts/CalcLayout.astro';
+
+/** Sıklıkların yıllık katsayısı. İki yılda bir yenilenen bir alan adı yılda 0,5 kez ödenir. */
+const FREKANSLAR = [
+  { deger: 12, ad: 'Aylık' },
+  { deger: 4, ad: '3 ayda bir' },
+  { deger: 2, ad: '6 ayda bir' },
+  { deger: 1, ad: 'Yıllık' },
+  { deger: 0.5, ad: '2 yılda bir' },
+];
+const SATIRLAR = [
+  { ad: 'Örn. dijital servis', tutar: '149', frekans: 12 },
+  { ad: 'Örn. bulut depolama', tutar: '49', frekans: 12 },
+  { ad: 'Örn. alan adı', tutar: '450', frekans: 1 },
+  { ad: '', tutar: '', frekans: 12 },
+  { ad: '', tutar: '', frekans: 12 },
+  { ad: '', tutar: '', frekans: 1 },
+  { ad: '', tutar: '', frekans: 1 },
+  { ad: '', tutar: '', frekans: 0.5 },
+];
+---
+
+<CalcLayout
+  title="Abonelik maliyeti hesaplama"
+  seoTitle="Abonelik maliyeti hesaplama — yıllık toplam"
+  description="Farklı sıklıklarda yenilenen aboneliklerin yıllık toplamını ve aylık ortalamasını çıkarır. Alan adı ve hosting gibi yılda bir ödenenler dahil."
+  path="/araclar/abonelik-maliyeti-hesaplama/"
+  note="Yıllık toplam, her satırın tutarı ile yıllık yenileme sayısının çarpımıdır. Zam ihtimali hesaba katılmaz; tutarlar bugünkü fiyatlarla."
+>
+  <form slot="form" id="f" autocomplete="off">
+    {
+      SATIRLAR.map((s, i) => (
+        <div class="row2" style="grid-template-columns: 1fr 120px; gap: 10px">
+          <div class="field">
+            {i === 0 && <label for={`ad${i}`}>Abonelik</label>}
+            <input id={`ad${i}`} class="ad" type="text" placeholder="Ad" value={s.ad} />
+          </div>
+          <div class="field">
+            {i === 0 && <label for={`tutar${i}`}>Tutar</label>}
+            <input id={`tutar${i}`} class="tutar" type="number" inputmode="decimal" min="0" step="1" placeholder="0" value={s.tutar} />
+          </div>
+          <div class="field" style="grid-column: 1 / -1">
+            <select id={`frekans${i}`} class="frekans">
+              {FREKANSLAR.map((f) => (
+                <option value={f.deger} selected={f.deger === s.frekans}>{f.ad}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      ))
+    }
+  </form>
+
+  <div slot="result" class="out">
+    <div class="headline">
+      <span class="eyebrow">Yıllık toplam</span>
+      <strong class="big" id="yillik">—</strong>
+      <p class="muted" style="margin-top:12px" id="aylikort"></p>
+    </div>
+
+    <div>
+      <p class="eyebrow" style="margin-bottom:10px">Dağılım</p>
+      <table class="tbl">
+        <thead><tr><th>Abonelik</th><th>Sıklık</th><th>Yıllık</th><th>Pay</th></tr></thead>
+        <tbody id="dagilim"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2>Aylık küçük, yıllık büyük</h2>
+
+  <p>
+    Aboneliklerin sinsi tarafı, kararın bir kez verilip ödemenin sürekli olmasıdır.
+    Kaydolma anında "ayda 149 lira" makul görünür; bir yıl sonra o abonelik 1.788 liraya
+    ulaşmıştır ve arada onu kullanıp kullanmadığınızı kimse sormamıştır.
+  </p>
+
+  <h2>Asıl gözden kaçanlar</h2>
+
+  <p>
+    Yılda bir yenilenenler: alan adı, hosting, SSL sertifikası, yazılım lisansları,
+    sigortalar. Bunlar genellikle bir karta bağlanır ve kendiliğinden yenilenir. Kart
+    değiştiğinde ya da bakiye yetmediğinde yenileme başarısız olur ve durumu fark etmeniz
+    haftalar sürebilir — <strong>alan adı düşerse geri almanın maliyeti yenileme
+    ücretinin çok üstüne çıkabilir.</strong>
+  </p>
+
+  <p>
+    Hepsini yakalamak için kart ekstrenizin <strong>son 12 ayını</strong> taramanız gerekir.
+    Üç aya bakarsanız yıllık olanları göremezsiniz.
+  </p>
+
+  <h2>Yıllığa geçmek her zaman kazanç değil</h2>
+
+  <p>
+    Yıllık ödeme çoğu serviste aylığa göre indirimlidir. Ama bu, o servisi bir yıl boyunca
+    kullanacağınızdan eminseniz kazançtır. Emin değilseniz aylık kalmak size iptal etme
+    özgürlüğü bırakır ve bu özgürlüğün de bir değeri vardır.
+  </p>
+
+  <p>
+    Basit ölçüt: son altı aydır düzenli kullanıyorsanız yıllığa geçin, aksi hâlde aylık
+    kalın.
+  </p>
+
+  <p>
+    Girdiğiniz hiçbir rakam sunucuya gönderilmez; hesap tarayıcınızda yapılır.
+  </p>
+
+  <p>
+    İlgili: <a href="/blog/unutulan-abonelikler/">Unutulan abonelikler yılda ne kadar sızdırıyor</a>
+    · <a href="/ozellikler/abonelik-ve-yenileme/">Abonelik ve yenileme takibi</a>
+  </p>
+</CalcLayout>
+
+<script>
+  import { money } from '../../lib/finance';
+
+  const ADLAR: Record<string, string> = {
+    '12': 'Aylık',
+    '4': '3 ayda bir',
+    '2': '6 ayda bir',
+    '1': 'Yıllık',
+    '0.5': '2 yılda bir',
+  };
+
+  function run() {
+    const adlar = [...document.querySelectorAll<HTMLInputElement>('.ad')];
+    const tutarlar = [...document.querySelectorAll<HTMLInputElement>('.tutar')];
+    const frekanslar = [...document.querySelectorAll<HTMLSelectElement>('.frekans')];
+
+    const satirlar = tutarlar
+      .map((t, i) => {
+        const tutar = Math.round(Number(t.value) * 100) || 0;
+        const kat = Number(frekanslar[i].value);
+        return {
+          ad: adlar[i].value.trim() || `Satır ${i + 1}`,
+          yillik: Math.round(tutar * kat),
+          frekans: ADLAR[frekanslar[i].value] ?? '',
+        };
+      })
+      .filter((s) => s.yillik > 0)
+      .sort((a, b) => b.yillik - a.yillik);
+
+    const toplam = satirlar.reduce((a, s) => a + s.yillik, 0);
+
+    document.getElementById('yillik')!.textContent = toplam > 0 ? money(toplam) : '—';
+    document.getElementById('aylikort')!.textContent =
+      toplam > 0
+        ? `Aylık ortalama ${money(Math.round(toplam / 12))}. ${satirlar.length} abonelik.`
+        : 'Tutarları girin.';
+
+    document.getElementById('dagilim')!.innerHTML = satirlar
+      .map(
+        (s) =>
+          `<tr><td>${s.ad.replace(/[<>&]/g, '')}</td><td>${s.frekans}</td><td>${money(s.yillik)}</td><td>%${((s.yillik / toplam) * 100).toFixed(0)}</td></tr>`,
+      )
+      .join('');
+  }
+
+  document.getElementById('f')?.addEventListener('input', run);
+  document.getElementById('f')?.addEventListener('change', run);
+  run();
+</script>

@@ -8,7 +8,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "assets": "node scripts/assets.mjs"
+    "assets": "node scripts/assets.mjs",
+    "test": "node tests/vectors.test.mjs",
+    "verify": "npm run build && node scripts/check-links.mjs && npm test"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",

@@ -1,34 +1,69 @@
 ---
 title: Araçlar
 seoTitle: Ücretsiz hesaplama araçları
-description: Kredi kartı son ödeme tarihi, asgari ödeme, kredi maliyeti ve taksit planı hesaplayıcıları. Uygulamanın kendi motoruyla aynı sonucu verir.
+description: Kredi kartı son ödeme tarihi, asgari ödeme, kredi maliyeti, taksit planı ve abonelik maliyeti hesaplayıcıları. Uygulamanın kendi motoruyla aynı sonucu verir.
 lang: tr
 path: /araclar/
 route: tools
-lead: Uygulamanın içindeki hesaplamaların aynısı, kurulum gerektirmeden tarayıcıda. Kayıt yok, veri sunucuya gitmiyor.
+lead: Uygulamanın içindeki hesaplamaların aynısı, kurulum gerektirmeden tarayıcıda. Kayıt yok, girdiğiniz rakamlar sunucuya gitmiyor.
 ---
 
-Bu araçlar Money Agenda'nın domain katmanındaki hesaplamalardan türetildi ve aynı test
-vektörleriyle doğrulanıyor. Yani buradaki sonuç ile uygulamadaki sonuç birbirinden
-ayrışamaz.
+## Hesaplayıcılar
 
-> **Hazırlanıyor.** Araçlar sırayla yayına alınıyor. Aşağıdaki listede ne geleceğini
-> görebilirsiniz; hepsi çıkana kadar hesaplamaların tamamı zaten uygulamanın içinde.
+### [Kredi maliyeti hesaplama](/araclar/kredi-maliyeti-hesaplama/)
 
-## Sırada
+Aylık taksit, toplam geri ödeme ve toplam faiz — **BSMV ve KKDF dahil**. Bankanın ilan
+ettiği orana bu iki kesinti dahil değildir; hesap makinesine o oranı girip bulduğunuz
+taksitin tutmamasının sebebi budur.
 
-- **Son ödeme tarihi hesaplayıcı** — kesim gününden son ödeme tarihini bulur, ay sonu
-  kaydırmasını doğru yapar
-- **Asgari ödeme simülatörü** — yalnızca asgariyi ödemeye devam ederseniz borcun ne kadar
-  sürede biteceğini ve toplam faizi gösterir
-- **Kredi maliyeti hesaplayıcı** — BSMV ve KKDF dahil, toplam geri ödeme ve efektif oran
-- **Taksit planı hesaplayıcı** — taksit tutarı, vade farkı ve aylık dağılım
-- **Abonelik maliyeti hesaplayıcı** — farklı sıklıklardaki aboneliklerin yıllık toplamı
+### [Kredi kartı son ödeme tarihi hesaplama](/araclar/son-odeme-tarihi-hesaplama/)
 
-## Bu arada
+Kesim gününden önümüzdeki 12 ayın kesim ve son ödeme tarihleri. Ayın 29-31'i gibi her ayda
+bulunmayan günleri doğru kaydırır. Bir harcamanın hangi ekstreye düşeceğini de gösterir.
+
+### [Asgari ödeme simülatörü](/araclar/asgari-odeme-simulatoru/)
+
+Sadece asgariyi ödemeye devam ederseniz borç ne kadar sürede biter ve toplamda ne kadar
+faiz ödersiniz. Ay ay tablo, bir de "biraz daha fazla ödesem ne olur" karşılaştırması.
+
+### [Taksit planı hesaplama](/araclar/taksit-plani-hesaplama/)
+
+Taksit tutarı, toplam ödeme ve peşin fiyata göre vade farkı. "Faizsiz taksit" gerçekten
+faizsiz mi — peşin fiyatı girince görünür.
+
+### [Abonelik maliyeti hesaplama](/araclar/abonelik-maliyeti-hesaplama/)
+
+Farklı sıklıklarda yenilenen aboneliklerin yıllık toplamı ve aylık ortalaması. Alan adı,
+hosting gibi yılda bir ödenenler dahil.
+
+---
+
+## Bu rakamlara neden güvenebilirsiniz
+
+Araçlar Money Agenda'nın domain katmanından **birebir taşındı**: aynı formül, aynı
+yuvarlama kuralları, aynı kuruş hassasiyeti.
+
+Bu bir iddia değil, denetlenen bir şart. Uygulamanın gerçek motorları bir dizi girdi
+üzerinde koşturulup çıktıları test vektörü olarak saklanıyor; site her yayına çıkmadan önce
+o vektörlerin hepsini yeniden üretebildiğini doğruluyor. **Ayrışma olursa site yayına
+çıkmıyor.**
+
+Hesaplamaların tamamı tarayıcınızda çalışır. Girdiğiniz hiçbir rakam sunucuya gönderilmez.
+
+## Sınırları
+
+Araçlar hesabı doğru yapar ama bankanızın tam olarak ne uygulayacağını bilemez. Dosya
+masrafı, zorunlu sigorta, farklı gün sayımı ya da kampanyalı oranlar sonucu değiştirir.
+Kesin tutar için her zaman **bankanızın teklifini ve ekstrenizi** esas alın.
+
+Mevzuatla belirlenen oranlar (asgari ödeme oranı, kredi kartı azami faizi) değişir;
+sayfalardaki varsayılanlar örnektir — kendi ekstrenizdekini girin.
+
+---
 
 Hepsi [uygulamanın içinde](https://play.google.com/store/apps/details?id=com.moneyagenda.app)
-zaten var; üstelik kendi kartlarınız ve kendi kredinizle.
+de var; üstelik kendi kartlarınız ve kendi kredinizle, tek tek girmeden.
 
 [Kredi kartı takibi](/ozellikler/kredi-karti-takibi/) ·
-[Taksit ve kredi](/ozellikler/taksit-ve-kredi/)
+[Taksit ve kredi](/ozellikler/taksit-ve-kredi/) ·
+[Abonelik ve yenileme](/ozellikler/abonelik-ve-yenileme/)

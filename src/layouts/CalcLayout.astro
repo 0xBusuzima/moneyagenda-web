@@ -1,0 +1,281 @@
+---
+/**
+ * Hesaplayıcı sayfalarının ortak kabuğu.
+ *
+ * Sitenin geri kalanı sıfır JS ile çalışıyor; hesaplayıcılar istisna çünkü işleri
+ * hesaplamak. Yine de çerçeve yok — her sayfa kendi küçük vanilla betiğini yüklüyor ve
+ * ortak hesap `src/lib/finance.ts`'ten geliyor.
+ *
+ * Form işaretlemesi `<form>` içinde ve alanlar gerçek `<label>` taşıyor: betik
+ * yüklenmezse bile sayfa okunabilir kalır ve ekran okuyucu alanları adlandırabilir.
+ */
+import Base from './Base.astro';
+import { SITE, absolute, ROUTES } from '../config';
+
+interface Props {
+  title: string;
+  seoTitle?: string;
+  description: string;
+  path: string;
+  /** Formun altında görünen, hesabın nasıl yapıldığını anlatan kısa not. */
+  note?: string;
+}
+
+const { title, seoTitle, description, path, note } = Astro.props;
+
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: SITE.name, item: absolute('/') },
+      { '@type': 'ListItem', position: 2, name: 'Araçlar', item: absolute('/araclar/') },
+      { '@type': 'ListItem', position: 3, name: title, item: absolute(path) },
+    ],
+  },
+];
+---
+
+<Base
+  lang="tr"
+  route="tools"
+  title={seoTitle ?? title}
+  description={description}
+  pathOverride={path}
+  alternate={null}
+  schema={schema}
+>
+  <header class="wrap head">
+    <p class="eyebrow"><a href={ROUTES.tools.tr}>Araçlar</a></p>
+    <h1>{title}</h1>
+    <p class="lead muted">{description}</p>
+  </header>
+
+  <div class="wrap calc">
+    <slot name="form" />
+    <slot name="result" />
+  </div>
+
+  {
+    note && (
+      <div class="wrap">
+        <p class="note muted">{note}</p>
+      </div>
+    )
+  }
+
+  <div class="wrap explain prose">
+    <slot />
+  </div>
+</Base>
+
+<style is:global>
+  /* Hesaplayıcı formları — sayfalar arasında aynı görünsün diye global. */
+  .calc {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: start;
+    padding-bottom: var(--space-xl);
+  }
+
+  .calc form {
+    display: grid;
+    gap: var(--space-l);
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-card);
+    padding: var(--space-xl);
+  }
+
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+
+  .field .hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+
+  .field input,
+  .field select {
+    font: inherit;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    background: var(--surface-elevated);
+    color: var(--ink);
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-chip);
+    padding: 11px 13px;
+    width: 100%;
+  }
+
+  .field select {
+    font-family: var(--font-sans);
+  }
+
+  .field input:focus,
+  .field select:focus {
+    border-color: var(--accent);
+    outline: none;
+  }
+
+  .row2 {
+    display: grid;
+    gap: var(--space-l);
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+  }
+
+  .check input {
+    width: auto;
+    margin-top: 3px;
+    accent-color: var(--accent);
+  }
+
+  .out {
+    display: grid;
+    gap: var(--space-l);
+    align-content: start;
+  }
+
+  .headline {
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-card);
+    padding: var(--space-xl);
+  }
+
+  .headline .big {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: clamp(1.9rem, 1.4rem + 2.2vw, 2.7rem);
+    color: var(--accent);
+    line-height: 1.1;
+    display: block;
+    margin-top: var(--space-xs);
+  }
+
+  .kv {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .kv div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-l);
+    padding-block: 8px;
+    border-bottom: 1px solid var(--divider);
+    font-size: 0.95rem;
+  }
+
+  .kv span:first-child {
+    color: var(--ink-muted);
+  }
+
+  .kv span:last-child {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .warn {
+    background: var(--danger-soft);
+    border-left: 3px solid var(--danger);
+    border-radius: 0 var(--radius-inner) var(--radius-inner) 0;
+    padding: var(--space-m) var(--space-l);
+    font-size: 0.9rem;
+  }
+
+  .note {
+    font-size: 0.86rem;
+    max-width: var(--measure);
+    padding-bottom: var(--space-xl);
+  }
+
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+
+  .tbl th {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: right;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--divider);
+  }
+
+  .tbl th:first-child,
+  .tbl td:first-child {
+    text-align: left;
+  }
+
+  .tbl td {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--divider);
+  }
+
+  .scroll {
+    max-height: 420px;
+    overflow: auto;
+  }
+
+  @media (min-width: 900px) {
+    .calc {
+      grid-template-columns: 380px minmax(0, 1fr);
+      gap: var(--space-xxl);
+    }
+  }
+</style>
+
+<style>
+  .head {
+    padding-block: clamp(2.5rem, 2rem + 4vw, 4rem) var(--space-xl);
+  }
+
+  .head h1 {
+    margin-top: var(--space-m);
+    max-width: 20ch;
+  }
+
+  .eyebrow a {
+    text-decoration: none;
+    color: var(--accent);
+  }
+
+  .lead {
+    margin-top: var(--space-l);
+    max-width: 60ch;
+    font-size: 1.08rem;
+  }
+
+  .explain {
+    padding-bottom: var(--space-xxl);
+  }
+
+  .explain :global(h2) {
+    margin-top: var(--space-xxl);
+  }
+</style>

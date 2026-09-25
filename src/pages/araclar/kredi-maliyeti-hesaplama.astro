@@ -1,0 +1,159 @@
+---
+import CalcLayout from '../../layouts/CalcLayout.astro';
+---
+
+<CalcLayout
+  title="Kredi maliyeti hesaplama"
+  seoTitle="Kredi hesaplama — BSMV ve KKDF dahil gerçek maliyet"
+  description="Aylık taksit, toplam geri ödeme ve toplam faiz. BSMV ve KKDF dahil edilerek hesaplanır — bankanın ilan ettiği orana bu iki kesinti dahil değildir."
+  path="/araclar/kredi-maliyeti-hesaplama/"
+  note="Hesap anüite (eşit taksit) yöntemiyle yapılır ve kuruş yuvarlaması son taksite yansıtılır. Banka dosya masrafı, sigorta veya farklı bir gün sayımı uygulayabilir; kesin tutar için bankanızın teklifini esas alın."
+>
+  <form slot="form" id="f" autocomplete="off">
+    <div class="field">
+      <label for="anapara">Kredi tutarı (TL)</label>
+      <input id="anapara" type="number" inputmode="decimal" min="1" step="1" value="100000" />
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label for="oran">Aylık faiz (%)</label>
+        <input id="oran" type="number" inputmode="decimal" min="0" step="0.01" value="2.89" />
+      </div>
+      <div class="field">
+        <label for="vade">Vade (ay)</label>
+        <input id="vade" type="number" inputmode="numeric" min="1" max="360" step="1" value="36" />
+      </div>
+    </div>
+
+    <label class="check">
+      <input id="vergi" type="checkbox" checked />
+      <span>BSMV ve KKDF dahil et <span class="hint">(ihtiyaç ve taşıt kredisinde evet, konut kredisinde hayır)</span></span>
+    </label>
+
+    <div class="row2">
+      <div class="field">
+        <label for="bsmv">BSMV (%)</label>
+        <input id="bsmv" type="number" inputmode="decimal" min="0" step="1" value="15" />
+      </div>
+      <div class="field">
+        <label for="kkdf">KKDF (%)</label>
+        <input id="kkdf" type="number" inputmode="decimal" min="0" step="1" value="15" />
+      </div>
+    </div>
+  </form>
+
+  <div slot="result" class="out">
+    <div class="headline">
+      <span class="eyebrow">Aylık taksit</span>
+      <strong class="big" id="taksit">—</strong>
+    </div>
+
+    <div class="kv">
+      <div><span>Vergili aylık oran</span><span id="efektif">—</span></div>
+      <div><span>Toplam geri ödeme</span><span id="toplam">—</span></div>
+      <div><span>Toplam faiz ve vergi</span><span id="faiz">—</span></div>
+      <div><span>Anaparanın üstüne binen</span><span id="oranfark">—</span></div>
+    </div>
+
+    <details>
+      <summary style="cursor:pointer;font-weight:600;padding:8px 0">Ödeme planı</summary>
+      <div class="scroll">
+        <table class="tbl">
+          <thead>
+            <tr><th>Taksit</th><th>Ödeme</th><th>Faiz</th><th>Anapara</th><th>Kalan</th></tr>
+          </thead>
+          <tbody id="plan"></tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <h2>Bu hesap nasıl yapılıyor</h2>
+
+  <p>
+    Aylık taksit anüite formülüyle bulunur:
+    <code>P × i × (1+i)^n / ((1+i)^n − 1)</code>. Buradaki <code>i</code> bankanın ilan
+    ettiği oran değil, <strong>vergili orandır</strong>:
+  </p>
+
+  <blockquote>vergili oran = ilan edilen aylık oran × (1 + BSMV + KKDF)</blockquote>
+
+  <p>
+    BSMV ve KKDF faizin üzerinden alınır, anaparanın değil. Her ikisi de %15 iken ilan
+    edilen oran <strong>1,30 ile çarpılır</strong>. Bu yüzden hesap makinesine bankanın
+    söylediği oranı girip bulduğunuz taksit, bankanın söylediğinden düşük çıkar.
+  </p>
+
+  <p>
+    <strong>Konut kredilerinde bu iki kesinti uygulanmaz.</strong> Bu yüzden ihtiyaç
+    kredisiyle konut kredisinin ilan edilen oranlarını doğrudan karşılaştırmak
+    yanıltıcıdır — birinde üzerine %30 biniyor, diğerinde binmiyor.
+  </p>
+
+  <h2>Neden bu rakama güvenebilirsiniz</h2>
+
+  <p>
+    Bu sayfadaki hesap, Money Agenda uygulamasının kendi kredi motorunun birebir
+    portudur. Uygulamanın motorundan üretilen test vektörleri bu sayfanın kodunu her
+    yayında doğruluyor; ikisi farklı sonuç verirse site yayına çıkmıyor. Yani buradaki
+    taksit ile uygulamadaki taksit aynı olmak zorunda.
+  </p>
+
+  <p>
+    Hesaplama tarayıcınızda çalışır. Girdiğiniz hiçbir rakam sunucuya gönderilmez.
+  </p>
+
+  <p>
+    İlgili: <a href="/blog/bsmv-kkdf-kredi-maliyeti/">BSMV ve KKDF nedir, kredi maliyetini ne kadar değiştirir</a>
+    · <a href="/ozellikler/taksit-ve-kredi/">Taksit ve kredi takibi</a>
+  </p>
+</CalcLayout>
+
+<script>
+  import { effectiveRate, monthlyPayment, schedule, totalPayableMinor, totalInterestMinor, money } from '../../lib/finance';
+
+  const $ = (id: string) => document.getElementById(id) as HTMLInputElement;
+  const set = (id: string, text: string) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+
+  function run() {
+    const anapara = Math.round(Number($('anapara').value) * 100);
+    const oran = Number($('oran').value) / 100;
+    const vade = Math.trunc(Number($('vade').value));
+    const vergi = $('vergi').checked;
+    const bsmv = Number($('bsmv').value) / 100;
+    const kkdf = Number($('kkdf').value) / 100;
+
+    if (!(anapara > 0) || !(vade > 0) || !Number.isFinite(oran)) {
+      set('taksit', '—');
+      return;
+    }
+
+    const rate = effectiveRate(oran, bsmv, kkdf, vergi);
+    const rows = schedule(anapara, rate, vade);
+    const toplam = totalPayableMinor(rows);
+    const faiz = totalInterestMinor(rows);
+
+    set('taksit', money(monthlyPayment(anapara, rate, vade)));
+    set('efektif', '%' + (rate * 100).toFixed(3).replace('.', ','));
+    set('toplam', money(toplam));
+    set('faiz', money(faiz));
+    set('oranfark', '%' + ((faiz / anapara) * 100).toFixed(1).replace('.', ','));
+
+    const body = document.getElementById('plan');
+    if (body) {
+      body.innerHTML = rows
+        .map(
+          (r) =>
+            `<tr><td>${r.seq}</td><td>${money(r.paymentMinor)}</td><td>${money(r.interestMinor)}</td><td>${money(r.principalPartMinor)}</td><td>${money(r.remainingMinor)}</td></tr>`,
+        )
+        .join('');
+    }
+  }
+
+  document.getElementById('f')?.addEventListener('input', run);
+  run();
+</script>
