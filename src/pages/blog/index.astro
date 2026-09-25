@@ -1,0 +1,104 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { absolute, SITE } from '../../config';
+
+const posts = (await getCollection('blog', (p) => p.data.lang === 'tr' && !p.data.draft)).sort(
+  (a, b) => b.data.published.getTime() - a.data.published.getTime(),
+);
+
+const fmt = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const schema = [
+  {
+    '@type': 'Blog',
+    '@id': `${SITE.domain}/blog/#blog`,
+    name: `${SITE.name} Blog`,
+    inLanguage: 'tr-TR',
+    url: absolute('/blog/'),
+  },
+];
+---
+
+<Base
+  lang="tr"
+  route="blog"
+  title="Blog"
+  seoTitle="Blog — kredi kartı, kredi ve bütçe üzerine"
+  description="Kredi kartı kesim ve son ödeme, asgari ödeme, kredi maliyeti, abonelik takibi. Rakamların nereden geldiğini açıklayan yazılar."
+  alternate={null}
+  schema={schema}
+>
+  <header class="wrap head">
+    <h1>Blog</h1>
+    <p class="lead muted">
+      Kredi kartı takvimi, kredi maliyeti ve bütçe üzerine yazılar. Her yazıda hesabın
+      nasıl yapıldığı açıkça yazıyor — sonucu söyleyip formülü saklamıyoruz.
+    </p>
+  </header>
+
+  <div class="wrap list">
+    {
+      posts.length === 0 ? (
+        <p class="muted">İlk yazılar hazırlanıyor.</p>
+      ) : (
+        posts.map((post) => (
+          <article class="item">
+            <time class="mono faint" datetime={post.data.published.toISOString().slice(0, 10)}>
+              {fmt.format(post.data.published)}
+            </time>
+            <h2>
+              <a href={`/blog/${post.data.slug}/`}>{post.data.title}</a>
+            </h2>
+            <p class="muted">{post.data.description}</p>
+          </article>
+        ))
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .head {
+    padding-block: clamp(2.5rem, 2rem + 4vw, 4.5rem) var(--space-l);
+  }
+
+  .lead {
+    margin-top: var(--space-l);
+    max-width: 58ch;
+    font-size: 1.08rem;
+  }
+
+  .list {
+    display: grid;
+    gap: 0;
+    padding-bottom: var(--space-xxl);
+    max-width: 72ch;
+  }
+
+  .item {
+    padding-block: var(--space-xl);
+    border-top: 1px solid var(--divider);
+  }
+
+  .item time {
+    font-size: 0.8rem;
+  }
+
+  .item h2 {
+    font-size: 1.35rem;
+    margin-block: var(--space-s) var(--space-s);
+  }
+
+  .item h2 a {
+    text-decoration: none;
+  }
+
+  .item h2 a:hover {
+    color: var(--accent);
+  }
+
+  .item p {
+    max-width: 62ch;
+  }
+</style>

@@ -19,6 +19,19 @@ export default defineConfig({
       prefixDefaultLocale: false,
     },
   },
+  /**
+   * Eski adresler kirilmiyor.
+   *
+   * `gizlilik.html`, `kosullar.html` ve `hesap-silme.html` Play Console'a girili ve
+   * disaridan baglanti almis olabilir. Statik barindirmada 301 donemiyoruz; Astro bu
+   * yonlendirmeleri meta-refresh + canonical tasiyan sayfalar olarak uretiyor, Google
+   * da bunu kalici yonlendirme gibi degerlendiriyor.
+   */
+  redirects: {
+    '/gizlilik.html': '/gizlilik/',
+    '/kosullar.html': '/kosullar/',
+    '/hesap-silme.html': '/hesap-silme/',
+  },
   integrations: [
     sitemap({
       i18n: {

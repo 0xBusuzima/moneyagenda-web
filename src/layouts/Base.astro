@@ -26,6 +26,13 @@ interface Props {
   schema?: unknown[];
   /** Arama sonuçlarında görünmesi istenmeyen sayfalar (404 gibi). */
   noindex?: boolean;
+  /**
+   * Karşı dildeki adres. Verilmezse ROUTES'tan türetilir; **null verilirse hiç
+   * hreflang yazılmaz**. Bu ayrım önemli: henüz çevrilmemiş bir sayfa için
+   * alternatif bildirmek, arama motorunu var olmayan bir adrese yollar ve
+   * 404 alan bir hreflang tüm dil eşlemesine güveni düşürür.
+   */
+  alternate?: string | null;
 }
 
 const {
@@ -37,13 +44,15 @@ const {
   pathOverride,
   schema = [],
   noindex = false,
+  alternate,
 } = Astro.props;
 
 const path = pathOverride ?? ROUTES[route][lang];
 const canonical = absolute(path);
 const ogImage = absolute(image);
 const other: Lang = lang === 'tr' ? 'en' : 'tr';
-const otherPath = pathOverride ? null : ROUTES[route][other];
+const otherPath = alternate === undefined ? (pathOverride ? null : ROUTES[route][other]) : alternate;
+const selfPath = lang === 'tr' ? path : (otherPath ?? path);
 
 // Başlıkta markayı iki kez tekrarlamıyoruz: ana sayfa zaten adla başlıyor.
 const fullTitle = route === 'home' ? title : `${title} · ${SITE.name}`;
@@ -83,7 +92,7 @@ const graph = [
     {/* Dil alternatifleri. x-default Türkçeye gidiyor: ürün Türkiye'ye özgü. */}
     {otherPath && <link rel="alternate" hreflang={LOCALE_TAG[lang]} href={canonical} />}
     {otherPath && <link rel="alternate" hreflang={LOCALE_TAG[other]} href={absolute(otherPath)} />}
-    {otherPath && <link rel="alternate" hreflang="x-default" href={absolute(ROUTES[route].tr)} />}
+    {otherPath && <link rel="alternate" hreflang="x-default" href={absolute(selfPath)} />}
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />

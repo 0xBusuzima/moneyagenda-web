@@ -1,0 +1,251 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { SITE, absolute } from '../../config';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', (p) => !p.data.draft);
+  return posts.map((post) => ({ params: { slug: post.data.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const d = post.data;
+const path = `/blog/${d.slug}/`;
+const fmt = new Intl.DateTimeFormat(d.lang === 'tr' ? 'tr-TR' : 'en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+const schema = [
+  {
+    '@type': 'BlogPosting',
+    headline: d.title,
+    description: d.description,
+    inLanguage: d.lang === 'tr' ? 'tr-TR' : 'en-US',
+    datePublished: d.published.toISOString(),
+    dateModified: (d.updated ?? d.published).toISOString(),
+    mainEntityOfPage: absolute(path),
+    author: { '@type': 'Organization', name: SITE.name, url: SITE.domain },
+    publisher: { '@id': `${SITE.domain}/#org` },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: SITE.name, item: absolute('/') },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: absolute('/blog/') },
+      { '@type': 'ListItem', position: 3, name: d.title, item: absolute(path) },
+    ],
+  },
+];
+
+const subs = headings.filter((h) => h.depth === 2);
+---
+
+<Base
+  lang={d.lang}
+  route="blog"
+  title={d.seoTitle ?? d.title}
+  description={d.description}
+  pathOverride={path}
+  alternate={null}
+  schema={schema}
+>
+  <article>
+    <header class="wrap head">
+      <p class="eyebrow">
+        <a href="/blog/">Blog</a>
+      </p>
+      <h1>{d.title}</h1>
+      <p class="lead muted">{d.description}</p>
+      <p class="faint mono dates">
+        {fmt.format(d.published)}{d.updated && ` · güncellendi ${fmt.format(d.updated)}`}
+      </p>
+    </header>
+
+    <div class="wrap body">
+      {
+        subs.length >= 3 && (
+          <nav class="toc" aria-label="İçindekiler">
+            <ul>
+              {subs.map((h) => (
+                <li>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+
+      <div class="prose">
+        <Content />
+
+        {
+          d.related.length > 0 && (
+            <aside class="related">
+              <h2>İlgili</h2>
+              <ul>
+                {d.related.map((r) => (
+                  <li>
+                    <a href={r.href}>{r.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          )
+        }
+
+        <aside class="appbox">
+          <p>
+            <strong>Bu hesapları elle yapmayın.</strong> Money Agenda kartlarınızın kesim ve son
+            ödeme tarihlerini, taksitlerinizi ve kredilerinizi aynı takvimde tutar, vakti gelmeden
+            hatırlatır.
+          </p>
+          <a class="btn" href={SITE.playUrl} rel="noopener">Google Play’den ücretsiz indir</a>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .head {
+    padding-block: clamp(2.5rem, 2rem + 4vw, 4rem) var(--space-xl);
+  }
+
+  .head h1 {
+    margin-top: var(--space-m);
+    max-width: 22ch;
+  }
+
+  .eyebrow a {
+    text-decoration: none;
+    color: var(--accent);
+  }
+
+  .lead {
+    margin-top: var(--space-l);
+    max-width: 62ch;
+    font-size: 1.1rem;
+  }
+
+  .dates {
+    margin-top: var(--space-m);
+    font-size: 0.8rem;
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-xxl);
+    align-items: start;
+    padding-bottom: var(--space-xxl);
+  }
+
+  .toc {
+    position: sticky;
+    top: 88px;
+    font-size: 0.9rem;
+    border-left: 2px solid var(--divider);
+    padding-left: var(--space-l);
+  }
+
+  .toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .toc a {
+    color: var(--ink-muted);
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    color: var(--accent);
+  }
+
+  .prose :global(h2),
+  .prose :global(h3) {
+    scroll-margin-top: 88px;
+  }
+
+  .prose :global(blockquote) {
+    margin: var(--space-xl) 0;
+    padding: var(--space-l) var(--space-xl);
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-inner) var(--radius-inner) 0;
+    color: var(--ink-muted);
+  }
+
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .prose :global(th),
+  .prose :global(td) {
+    text-align: left;
+    padding: var(--space-m) var(--space-l) var(--space-m) 0;
+    border-bottom: 1px solid var(--divider);
+    vertical-align: top;
+  }
+
+  .prose :global(td:not(:first-child)) {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .prose :global(th) {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .prose :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--divider);
+    margin-block: var(--space-xxl);
+  }
+
+  .related ul {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .appbox {
+    margin-top: var(--space-xxl);
+    padding: var(--space-xl);
+    background: var(--surface);
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-card);
+  }
+
+  .btn {
+    display: inline-block;
+    margin-top: var(--space-l);
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-pill);
+    padding: 11px 22px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.94rem;
+  }
+
+  @media (min-width: 960px) {
+    .body {
+      grid-template-columns: 210px minmax(0, 1fr);
+    }
+
+    .body:not(:has(.toc)) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

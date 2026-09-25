@@ -6,6 +6,7 @@
  * betik yüklenmeden önce de çalışmalı; kullanıcı yavaş bağlantıda ilk dokunuşta
  * tepkisiz bir düğmeyle karşılaşmasın.
  */
+import { getCollection } from 'astro:content';
 import { NAV, ROUTES, SITE, t, type Lang, type RouteKey } from '../config';
 
 interface Props {
@@ -16,7 +17,24 @@ interface Props {
 const { lang, active } = Astro.props;
 const other: Lang = lang === 'tr' ? 'en' : 'tr';
 const home = ROUTES.home[lang];
-const otherHref = ROUTES[active]?.[other] ?? ROUTES.home[other];
+
+/**
+ * Hangi sayfalar gercekten var?
+ *
+ * Gezinme ROUTES'tan korlemesine uretilseydi, henuz cevrilmemis bir sayfaya baglanti
+ * verirdi ve ziyaretci 404 gorurdu. Kaynak olarak icerik koleksiyonu kullaniliyor:
+ * baglanti ancak dosya varsa ciziliyor. Ana sayfa koleksiyonda degil, ayri eklendi.
+ */
+const entries = await getCollection('pages');
+const existing = new Set(['home', ...entries.filter((e) => e.data.lang === lang).map((e) => e.data.route)]);
+const twinExists = new Set(['home', ...entries.filter((e) => e.data.lang === other).map((e) => e.data.route)]);
+// Blog yalnizca Turkce (docs/15 karari).
+if (lang === 'tr') existing.add('blog');
+if (other === 'tr') twinExists.add('blog');
+
+const items = NAV.filter((key) => existing.has(key));
+const otherHref = twinExists.has(active) ? ROUTES[active][other] : ROUTES.home[other];
+const showLang = twinExists.has(active) || active === 'home';
 ---
 
 <header class="site-head">
@@ -33,13 +51,15 @@ const otherHref = ROUTES[active]?.[other] ?? ROUTES.home[other];
 
       <nav class="links" aria-label={SITE.name}>
         {
-          NAV.map((key) => (
+          items.map((key) => (
             <a href={ROUTES[key][lang]} aria-current={active === key ? 'page' : undefined}>
               {t(lang, `nav_${key}`)}
             </a>
           ))
         }
-        <a class="lang" href={otherHref} hreflang={other} rel="alternate">{t(lang, 'lang_other')}</a>
+        {showLang && (
+          <a class="lang" href={otherHref} hreflang={other} rel="alternate">{t(lang, 'lang_other')}</a>
+        )}
         <a class="cta" href={SITE.playUrl} rel="noopener">{t(lang, 'cta_short')}</a>
       </nav>
     </details>

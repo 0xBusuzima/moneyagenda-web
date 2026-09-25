@@ -1,0 +1,205 @@
+---
+/**
+ * Bütün metin sayfalarını üreten tek yönlendirme.
+ *
+ * Adres frontmatter'daki `path`'ten geliyor; dosya adından değil. Böylece Türkçe
+ * adresler Türkçe, İngilizce adresler İngilizce olabiliyor — `/en/ozellikler/` gibi
+ * melez bir adres çıkmıyor.
+ */
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { SITE, absolute, type Lang } from '../config';
+
+export async function getStaticPaths() {
+  const all = await getCollection('pages');
+  return all.map((entry) => {
+    // Karşı dildeki sürüm gerçekten var mı? Yoksa hreflang yazılmayacak.
+    const twin = all.find((p) => p.data.route === entry.data.route && p.data.lang !== entry.data.lang);
+    return {
+      params: { slug: entry.data.path.replace(/^\/|\/$/g, '') },
+      props: { entry, alternate: twin ? twin.data.path : null },
+    };
+  });
+}
+
+const { entry, alternate } = Astro.props;
+const { Content, headings } = await render(entry);
+const d = entry.data;
+const lang = d.lang as Lang;
+
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: SITE.name, item: absolute(lang === 'tr' ? '/' : '/en/') },
+      { '@type': 'ListItem', position: 2, name: d.title, item: absolute(d.path) },
+    ],
+  },
+];
+
+const showToc = headings.filter((h) => h.depth === 2).length >= 4;
+---
+
+<Base
+  lang={lang}
+  route={d.route as never}
+  title={d.seoTitle ?? d.title}
+  description={d.description}
+  pathOverride={d.path}
+  alternate={alternate}
+  noindex={d.noindex}
+  schema={schema}
+>
+  <article class="page">
+    <header class="wrap head">
+      <h1>{d.title}</h1>
+      {d.lead && <p class="lead">{d.lead}</p>}
+      {d.updated && <p class="faint updated mono">{d.updated}</p>}
+    </header>
+
+    <div class="wrap body">
+      {
+        showToc && (
+          <nav class="toc" aria-label={lang === 'tr' ? 'İçindekiler' : 'Contents'}>
+            <ul>
+              {headings
+                .filter((h) => h.depth === 2)
+                .map((h) => (
+                  <li>
+                    <a href={`#${h.slug}`}>{h.text}</a>
+                  </li>
+                ))}
+            </ul>
+          </nav>
+        )
+      }
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .head {
+    padding-block: clamp(2.5rem, 2rem + 4vw, 4.5rem) var(--space-xl);
+  }
+
+  .head h1 {
+    max-width: 20ch;
+  }
+
+  .lead {
+    margin-top: var(--space-l);
+    max-width: 62ch;
+    font-size: 1.1rem;
+    color: var(--ink-muted);
+  }
+
+  .updated {
+    margin-top: var(--space-m);
+    font-size: 0.82rem;
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-xxl);
+    align-items: start;
+    padding-bottom: var(--space-xxl);
+  }
+
+  .toc {
+    position: sticky;
+    top: 88px;
+    font-size: 0.9rem;
+    border-left: 2px solid var(--divider);
+    padding-left: var(--space-l);
+  }
+
+  .toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .toc a {
+    color: var(--ink-muted);
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    color: var(--accent);
+  }
+
+  /* Markdown'dan gelen içerik global seçicilerle biçimleniyor. */
+  .prose :global(h2) {
+    scroll-margin-top: 88px;
+  }
+
+  .prose :global(h3) {
+    scroll-margin-top: 88px;
+  }
+
+  .prose :global(strong) {
+    color: var(--ink);
+  }
+
+  .prose :global(blockquote) {
+    margin: var(--space-xl) 0;
+    padding: var(--space-l) var(--space-xl);
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-inner) var(--radius-inner) 0;
+    color: var(--ink-muted);
+  }
+
+  .prose :global(blockquote p + p) {
+    margin-top: var(--space-m);
+  }
+
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .prose :global(th),
+  .prose :global(td) {
+    text-align: left;
+    padding: var(--space-m) var(--space-l) var(--space-m) 0;
+    border-bottom: 1px solid var(--divider);
+    vertical-align: top;
+  }
+
+  .prose :global(th) {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .prose :global(code) {
+    background: var(--surface-variant);
+    padding: 0.12em 0.4em;
+    border-radius: 6px;
+    font-size: 0.9em;
+  }
+
+  .prose :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--divider);
+    margin-block: var(--space-xxl);
+  }
+
+  @media (min-width: 960px) {
+    .body {
+      grid-template-columns: 210px minmax(0, 1fr);
+    }
+
+    .body:not(:has(.toc)) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

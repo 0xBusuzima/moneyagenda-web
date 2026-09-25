@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import { ROUTES, SITE, t, type Lang } from '../config';
 
 interface Props {
@@ -7,6 +8,13 @@ interface Props {
 
 const { lang } = Astro.props;
 const year = new Date().getFullYear();
+
+// Header'daki gerekcenin aynisi: yalnizca var olan sayfalar listeleniyor.
+const entries = await getCollection('pages');
+const has = new Set(entries.filter((e) => e.data.lang === lang).map((e) => e.data.route));
+if (lang === 'tr') has.add('blog');
+const keep = <T extends readonly (readonly [string, string])[]>(rows: T) =>
+  rows.filter(([key]) => has.has(key));
 
 const product = [
   ['features', t(lang, 'nav_features')],
@@ -39,14 +47,14 @@ const legal = [
     <nav aria-labelledby="foot-product">
       <h2 id="foot-product" class="eyebrow">{t(lang, 'footer_product')}</h2>
       <ul>
-        {product.map(([key, label]) => <li><a href={ROUTES[key][lang]}>{label}</a></li>)}
+        {keep(product).map(([key, label]) => <li><a href={ROUTES[key as keyof typeof ROUTES][lang]}>{label}</a></li>)}
       </ul>
     </nav>
 
     <nav aria-labelledby="foot-legal">
       <h2 id="foot-legal" class="eyebrow">{t(lang, 'footer_legal')}</h2>
       <ul>
-        {legal.map(([key, label]) => <li><a href={ROUTES[key][lang]}>{label}</a></li>)}
+        {keep(legal).map(([key, label]) => <li><a href={ROUTES[key as keyof typeof ROUTES][lang]}>{label}</a></li>)}
         <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
       </ul>
     </nav>

@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import { ROUTES, SITE } from '../config';
+---
+
+<Base
+  lang="tr"
+  route="home"
+  title="Sayfa bulunamadı"
+  description="Aradığınız sayfa burada değil."
+  pathOverride="/404/"
+  alternate={null}
+  noindex
+>
+  <section class="wrap box">
+    <p class="eyebrow mono">404</p>
+    <h1>Bu sayfa burada değil</h1>
+    <p class="muted">
+      Adres değişmiş ya da yanlış yazılmış olabilir. Aşağıdakiler işinize yarayabilir.
+    </p>
+    <ul>
+      <li><a href={ROUTES.home.tr}>Ana sayfa</a></li>
+      <li><a href={ROUTES.features.tr}>Özellikler</a></li>
+      <li><a href={ROUTES.support.tr}>Destek</a></li>
+      <li><a href={ROUTES.privacy.tr}>Gizlilik politikası</a></li>
+      <li><a href={SITE.playUrl} rel="noopener">Google Play sayfası</a></li>
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .box {
+    padding-block: clamp(4rem, 3rem + 8vw, 9rem);
+    max-width: 52ch;
+  }
+  h1 { margin-block: var(--space-m) var(--space-l); }
+  ul { margin-top: var(--space-xl); padding-left: 1.1em; display: grid; gap: var(--space-s); }
+  a { color: var(--accent); }
+</style>
