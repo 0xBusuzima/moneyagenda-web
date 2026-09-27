@@ -35,7 +35,8 @@ sınırlıdır; güvenlik kuralları başka bir kullanıcının verisine erişim
 - **Finansal verileriniz satılmaz ve reklam amacıyla kullanılmaz.** Tutarlar, kart
   adları, kişi adları, kategoriler ve bütçeler reklam ağına ya da başka bir üçüncü tarafa
   hiçbir koşulda gönderilmez.
-- **Analitik veya çökme raporlama servisi kullanılmaz.**
+- **Uygulamada analitik veya çökme raporlama servisi kullanılmaz.** (Bu web sitesi
+  için durum aşağıda ayrıca açıklanıyor.)
 - Bulut yedeği verileri yalnızca size ait yedeğin saklanması ve cihazlarınız arasında
   eşitlenmesi için işlenir.
 
@@ -83,6 +84,23 @@ durmaya devam eder.
 
 Uygulama 13 yaş altındaki kullanıcılara yönelik değildir ve bilerek bu yaş grubundan veri
 toplamaz.
+
+## Bu web sitesi
+
+Yukarıdakiler **uygulama** içindir. `moneyagenda.com.tr` sitesinde kaç kişinin hangi
+sayfayı gördüğünü ölçmek için **Cloudflare Web Analytics** kullanılıyor.
+
+- **Çerez koymaz** ve tarayıcınızda hiçbir şey saklamaz; bu yüzden sitede çerez onayı
+  penceresi yoktur
+- **Parmak izi çıkarmaz**, sizi siteler arasında takip etmez
+- Toplanan şey sayfa adresi, yönlendiren adres, ülke, tarayıcı ve cihaz türü gibi
+  toplulaştırılmış bilgidir — kişiyi tanımlamaz
+
+**Sitedeki hesaplayıcılar tarayıcınızda çalışır.** Girdiğiniz tutarlar, oranlar ve
+tarihler hiçbir sunucuya gönderilmez; ölçüm de bunları görmez.
+
+Uygulama ile site arasında veri alışverişi yoktur: uygulamadaki kayıtlarınız siteye,
+sitedeki ölçüm de uygulamaya geçmez.
 
 ## İletişim
 

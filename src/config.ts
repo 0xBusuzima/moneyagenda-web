@@ -13,6 +13,16 @@ export const SITE = {
   email: 'yzcdev@gmail.com',
   playUrl: 'https://play.google.com/store/apps/details?id=com.moneyagenda.app',
   github: 'https://github.com/0xBusuzima',
+  /**
+   * Cloudflare Web Analytics.
+   *
+   * Alan adi Cloudflare uzerinden proxy'lenmiyor (GitHub Pages sertifikasi icin gri
+   * bulut), bu yuzden otomatik enjeksiyon calismiyor - beacon elle ekleniyor.
+   *
+   * Token gizli degil: zaten sayfanin kaynagindan gorunuyor ve yalnizca "bu olcum
+   * hangi siteye ait" bilgisini tasiyor.
+   */
+  analyticsToken: '89742761001c4b7280648fdc4b3b6e25',
 } as const;
 
 export type Lang = 'tr' | 'en';

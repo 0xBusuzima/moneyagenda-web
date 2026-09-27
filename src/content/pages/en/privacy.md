@@ -35,7 +35,8 @@ prevent access to another user's data.
 - **Your financial data is never sold or used for advertising.** Amounts, card names,
   people's names, categories and budgets are never sent to an ad network or any other
   third party.
-- **No analytics or crash reporting service is used.**
+- **No analytics or crash reporting service is used in the app.** (The website is
+  covered separately below.)
 - Cloud backup data is processed solely to store your backup and sync it across your
   devices.
 
@@ -83,6 +84,23 @@ remain.
 
 The app is not directed at users under 13 and does not knowingly collect data from that
 age group.
+
+## This website
+
+The above describes the **app**. The site at `moneyagenda.com.tr` uses **Cloudflare Web
+Analytics** to measure how many people view which page.
+
+- It **sets no cookies** and stores nothing in your browser, which is why the site has no
+  cookie consent banner
+- It **does not fingerprint** you and does not track you across sites
+- What it collects is aggregated: page address, referrer, country, browser and device
+  type. It does not identify a person
+
+**The calculators on the site run in your browser.** The amounts, rates and dates you
+enter are never sent to a server, and the analytics does not see them.
+
+No data moves between the app and the site: your records in the app never reach the site,
+and the site's measurements never reach the app.
 
 ## Contact
 

@@ -129,6 +129,17 @@ const graph = [
     <slot name="head" />
   </head>
 
+  <!--
+    Cloudflare Web Analytics.
+
+    `is:inline`: Astro bu etiketi kendi paketleyicisinden gecirmesin, ucuncu tarafin
+    betigi oldugu gibi kalsin.
+
+    Govdenin sonunda ve `type="module"` (yani ertelenmis): sayfanin cizilmesini
+    geciktirmiyor. Cerez koymuyor, parmak izi cikarmiyor - bu yuzden cerez banner'i
+    gerekmiyor ve gizlilik politikasiyla celismiyor.
+  -->
+
   <body>
     <a class="skip-link" href="#main">{t(lang, 'skip')}</a>
     <Header lang={lang} active={route} />
@@ -136,5 +147,12 @@ const graph = [
       <slot />
     </main>
     <Footer lang={lang} />
+
+    <script
+      is:inline
+      type="module"
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon={`{"token": "${SITE.analyticsToken}"}`}
+    ></script>
   </body>
 </html>
