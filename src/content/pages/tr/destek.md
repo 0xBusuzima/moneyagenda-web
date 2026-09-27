@@ -1,7 +1,7 @@
 ---
 title: Destek
 seoTitle: Destek ve sık sorulanlar
-description: Money Agenda ile ilgili sık sorulan sorular, bildirim sorunlarının çözümü ve iletişim.
+description: "Money Agenda ile ilgili sık sorulan sorular: bildirimler neden gelmiyor, veriler yeni telefona nasıl taşınır, Pro nasıl geri yüklenir."
 lang: tr
 path: /destek/
 route: support

@@ -1,7 +1,7 @@
 ---
 title: Unutulan abonelikler yılda ne kadar sızdırıyor
 seoTitle: Abonelik takibi — unutulan abonelikler yıllık maliyeti
-description: Abonelikler bir kez kurulur, sonra kendiliğinden yenilenir. Aylık küçük tutarlar yıllık toplamda beklenenden büyük çıkar; alan adı ve hosting gibi yıllık olanlar ise tamamen gözden kaçar.
+description: Abonelikler bir kez kurulur, sonra kendiliğinden yenilenir. Aylık küçük tutarlar yıllık toplamda beklenenden büyük çıkar, yıllık olanlar ise gözden kaçar.
 lang: tr
 slug: unutulan-abonelikler
 published: 2026-09-25

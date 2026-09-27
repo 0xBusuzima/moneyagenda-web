@@ -1,7 +1,7 @@
 ---
 title: BSMV ve KKDF nedir, kredi maliyetini ne kadar değiştirir
 seoTitle: BSMV ve KKDF nedir — kredinin gerçek maliyeti nasıl hesaplanır
-description: Bankanın ilan ettiği faiz oranı ödediğiniz tutarın tamamı değildir. Tüketici kredilerinde faizin üzerine BSMV ve KKDF biner ve aylık maliyeti belirgin biçimde yükseltir.
+description: Bankanın ilan ettiği faiz, ödediğinizin tamamı değil. Tüketici kredisinde faizin üzerine BSMV ve KKDF biner; aylık oran 1,30 ile çarpılır.
 lang: tr
 slug: bsmv-kkdf-kredi-maliyeti
 published: 2026-09-25

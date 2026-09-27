@@ -35,6 +35,8 @@ jobs:
         run: npm test
       - name: Metinlerde yabanci alfabe karakteri denetimi
         run: node scripts/check-text.mjs
+      - name: Arama sonucu meta denetimi
+        run: node scripts/check-seo.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

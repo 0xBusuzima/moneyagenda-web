@@ -1,6 +1,6 @@
 ---
 title: Asgari ödeme tuzağı — sadece asgariyi ödersen ne olur
-seoTitle: Asgari ödeme nedir, sadece asgariyi ödersen borç ne kadar sürer
+seoTitle: Asgari ödeme nedir, borç ne kadar sürede biter
 description: Asgari ödeme borcu kapatmaz, gecikmeyi önler. Kalan bakiyeye faiz işlemeye devam eder ve borcun ömrü beklediğinizden çok daha uzun olur.
 lang: tr
 slug: asgari-odeme-tuzagi

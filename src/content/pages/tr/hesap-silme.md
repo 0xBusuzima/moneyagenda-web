@@ -1,7 +1,7 @@
 ---
 title: Hesap ve veri silme
 seoTitle: Hesap ve veri silme talebi
-description: Money Agenda hesabınızı ve buluttaki verilerinizi uygulama içinden anında ya da e-posta ile silebilirsiniz.
+description: Money Agenda hesabınızı ve buluttaki verilerinizi uygulama içinden anında ya da e-posta ile silebilirsiniz. Neyin silindiği ve neyin kaldığı.
 lang: tr
 path: /hesap-silme/
 route: deleteAccount

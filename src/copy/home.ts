@@ -26,7 +26,7 @@ export const HOME: Record<'tr' | 'en', HomeCopy> = {
     meta: {
       title: 'Money Agenda — kart ekstresi, taksit, kredi ve abonelik takibi',
       description:
-        'Kredi kartı kesim ve son ödeme tarihi, taksit, kredi, abonelik ve alan adı yenilemeleri tek takvimde. Vakti gelmeden hatırlatır. Ücretsiz, girişsiz çalışır, veriler telefonda kalır.',
+        'Kredi kartı kesim ve son ödeme tarihi, taksit, kredi, abonelik ve alan adı yenilemeleri tek takvimde, vakti gelmeden hatırlatılır. Ücretsiz ve girişsiz çalışır.',
     },
     hero: {
       eyebrow: 'Android · Türkiye için',
@@ -156,9 +156,9 @@ export const HOME: Record<'tr' | 'en', HomeCopy> = {
 
   en: {
     meta: {
-      title: 'Money Agenda — credit card, instalment, loan and subscription tracker',
+      title: 'Money Agenda — credit card and subscription tracker',
       description:
-        'Credit card statement and due dates, instalments, loans, subscriptions and domain renewals in one calendar, with reminders before they are due. Free, works without sign-in, data stays on your phone.',
+        'Credit card statement and due dates, instalments, loans, subscriptions and domain renewals in one calendar, with a reminder before each one falls due.',
     },
     hero: {
       eyebrow: 'Android · built for Turkey',

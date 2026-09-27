@@ -54,8 +54,19 @@ const other: Lang = lang === 'tr' ? 'en' : 'tr';
 const otherPath = alternate === undefined ? (pathOverride ? null : ROUTES[route][other]) : alternate;
 const selfPath = lang === 'tr' ? path : (otherPath ?? path);
 
-// Başlıkta markayı iki kez tekrarlamıyoruz: ana sayfa zaten adla başlıyor.
-const fullTitle = route === 'home' ? title : `${title} · ${SITE.name}`;
+/**
+ * Başlık.
+ *
+ * Marka eki yalnızca **sığıyorsa** ekleniyor. Arama sonucunda başlık ~60 karakterde
+ * kırpılır; eki zorlamak, sayfanın kendi başlığının sonunu yiyip "…· Money Agen"
+ * gibi bir şey bırakır. Uzun başlıklarda markayı atmak, başlığı kaybetmekten iyidir.
+ *
+ * Ana sayfa zaten adla başladığı için orada ek yok.
+ */
+const SUFFIX = ` · ${SITE.name}`;
+const MAX_TITLE = 60;
+const fullTitle =
+  route === 'home' || title.length + SUFFIX.length > MAX_TITLE ? title : title + SUFFIX;
 
 const graph = [
   {

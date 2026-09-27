@@ -1,7 +1,7 @@
 ---
 title: Bütçe ve rapor
 seoTitle: Bütçe, hedef ve rapor
-description: Kategori bütçeleri, hedefler, aylık raporlar, ay sonu tahmini ve CSV / XLSX / PDF dışa aktarma.
+description: Kategori bütçeleri, hedefler, aylık raporlar ve formülü ekranda yazan ay sonu tahmini. CSV, XLSX ve PDF olarak dışa aktarma.
 lang: tr
 path: /ozellikler/butce-ve-rapor/
 route: featuresBudget

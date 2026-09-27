@@ -1,7 +1,7 @@
 ---
 title: Basın kiti
 seoTitle: Basın kiti — logo, ekran görüntüleri ve künye
-description: Money Agenda hakkında yazacaklar için logo, ekran görüntüleri, kısa tanıtım metinleri ve künye bilgileri.
+description: Money Agenda hakkında yazacaklar için logo, ekran görüntüleri, hazır tanıtım metinleri ve künye. İzin istemeden kullanılabilir.
 lang: tr
 path: /basin-kiti/
 route: press

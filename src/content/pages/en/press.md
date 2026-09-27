@@ -1,7 +1,7 @@
 ---
 title: Press kit
 seoTitle: Press kit - logo, screenshots and fact sheet
-description: Logo, screenshots, short descriptions and fact sheet for anyone writing about Money Agenda.
+description: Logo, screenshots, ready-made descriptions and a fact sheet for anyone writing about Money Agenda. Free to use without asking.
 lang: en
 path: /en/press-kit/
 route: press

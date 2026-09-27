@@ -1,7 +1,7 @@
 ---
 title: Kredi kartı kesim tarihi nedir, son ödeme tarihi nasıl hesaplanır
 seoTitle: Kredi kartı kesim tarihi ve son ödeme tarihi nasıl hesaplanır
-description: Kesim günü ekstrenin kapandığı, son ödeme günü borcun ödenmesi gereken tarihtir. İkisi arasındaki fark kartına göre değişir ve bu fark harcamanın ne zaman ödeneceğini belirler.
+description: Kesim günü ekstrenin kapandığı, son ödeme günü borcun ödenmesi gereken tarihtir. Aradaki fark, harcamanın ne zaman ödeneceğini belirler.
 lang: tr
 slug: kredi-karti-kesim-tarihi-nedir
 published: 2026-09-25

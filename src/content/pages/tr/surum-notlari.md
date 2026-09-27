@@ -1,7 +1,7 @@
 ---
 title: Sürüm notları
 seoTitle: Sürüm notları — neler değişti
-description: Money Agenda'nın yayınlanan sürümleri ve her birinde neyin değiştiği.
+description: Money Agenda'nın yayınlanan bütün sürümleri ve her birinde neyin değiştiği. Sürüm notlarındaki her madde koddan doğrulanmıştır.
 lang: tr
 path: /surum-notlari/
 route: releases

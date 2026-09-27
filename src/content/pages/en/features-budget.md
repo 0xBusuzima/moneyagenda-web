@@ -1,7 +1,7 @@
 ---
 title: Budgets and reports
 seoTitle: Budgets, goals and reports
-description: Category budgets, goals, monthly reports, a month-end estimate, and export to CSV, XLSX and PDF.
+description: Category budgets, goals, monthly reports and a month-end estimate whose formula is written on screen. Export to CSV, XLSX and PDF.
 lang: en
 path: /en/features/budget-and-reports/
 route: featuresBudget

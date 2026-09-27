@@ -1,7 +1,7 @@
 ---
 title: Release notes
 seoTitle: Release notes - what changed
-description: Money Agenda releases and what changed in each one.
+description: Every released version of Money Agenda and what changed in it. Each line in a release note is verified against the code before it ships.
 lang: en
 path: /en/release-notes/
 route: releases
