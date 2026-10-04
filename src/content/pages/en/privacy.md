@@ -35,8 +35,9 @@ prevent access to another user's data.
 - **Your financial data is never sold or used for advertising.** Amounts, card names,
   people's names, categories and budgets are never sent to an ad network or any other
   third party.
-- **No analytics or crash reporting service is used in the app.** (The website is
-  covered separately below.)
+- **There is no behavioural analytics in the app.** Which screens you use, what you
+  tap and how often you open the app are not measured. Only crash reporting is in
+  place; it is explained below. (The website is covered separately at the end.)
 - Cloud backup data is processed solely to store your backup and sync it across your
   devices.
 
@@ -61,6 +62,25 @@ To remove ads entirely you can buy **Money Agenda Pro** in the app (monthly, 6-m
 yearly subscription, or a one-time lifetime package). With Pro no ad request is made at
 all. Purchases go through Google Play; your payment details are never passed to the app,
 which only learns whether the entitlement exists.
+
+## Crash reporting
+
+If the app closes unexpectedly, **Firebase Crashlytics** (Google) sends a crash report so
+the fault can be found and fixed. The report contains:
+
+- Where in the code the fault occurred (the stack trace) and the app version
+- Device model, Android version, available memory and storage
+- When the crash happened and how long the app had been running
+- A random installation identifier generated on your device at install time
+
+**Your financial records are not included in crash reports.** Amounts, card names,
+people's names, categories and budgets are never written into a report. An automated
+check guards this so it cannot break by accident: if a validation or error message
+contains an amount, the build fails.
+
+The app does **not** send its own logs, your account details or the screens you visited
+to Crashlytics — only the crash itself. Crash reports are sent only from the version
+installed from the store.
 
 ## Permissions
 

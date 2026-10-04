@@ -35,8 +35,9 @@ sınırlıdır; güvenlik kuralları başka bir kullanıcının verisine erişim
 - **Finansal verileriniz satılmaz ve reklam amacıyla kullanılmaz.** Tutarlar, kart
   adları, kişi adları, kategoriler ve bütçeler reklam ağına ya da başka bir üçüncü tarafa
   hiçbir koşulda gönderilmez.
-- **Uygulamada analitik veya çökme raporlama servisi kullanılmaz.** (Bu web sitesi
-  için durum aşağıda ayrıca açıklanıyor.)
+- **Uygulamada davranış analitiği yok.** Hangi ekranı ne kadar kullandığınız, neye
+  dokunduğunuz, uygulamayı ne sıklıkla açtığınız ölçülmüyor. Yalnızca çökme raporlama
+  var; aşağıda ayrıca açıklanıyor. (Bu web sitesi için durum en altta anlatılıyor.)
 - Bulut yedeği verileri yalnızca size ait yedeğin saklanması ve cihazlarınız arasında
   eşitlenmesi için işlenir.
 
@@ -61,6 +62,24 @@ Reklamları tamamen kaldırmak isterseniz uygulama içinden **Money Agenda Pro**
 alabilirsiniz (aylık, 6 aylık, yıllık abonelik veya tek seferlik ömür boyu paket). Pro'da
 reklam isteği hiç yapılmaz. Satın alma işlemi Google Play üzerinden yürütülür; ödeme
 bilgileriniz uygulamaya iletilmez, uygulama yalnızca hakkın olup olmadığını öğrenir.
+
+## Çökme raporlama
+
+Uygulama beklenmedik şekilde kapanırsa, hatayı bulup düzeltebilmek için **Firebase
+Crashlytics** (Google) bir çökme raporu gönderir. Rapor şunları içerir:
+
+- Hatanın kod içinde nerede oluştuğu (yığın izi) ve uygulama sürümü
+- Cihaz modeli, Android sürümü, kullanılabilir bellek ve depolama
+- Çökmenin zamanı ve uygulamanın o an ne kadar süredir açık olduğu
+- Cihazınıza özel, kurulumla birlikte üretilen rastgele bir kurulum kimliği
+
+**Finansal kayıtlarınız çökme raporuna girmez.** Tutarlar, kart adları, kişi adları,
+kategoriler ve bütçeler rapora yazılmaz. Bunu kazara bozmamak için kodda otomatik bir
+denetim çalışıyor: doğrulama ve hata mesajlarında tutar geçiyorsa derleme başarısız olur.
+
+Uygulama Crashlytics'e **kendi kayıtlarını, hesap bilgilerinizi ya da hangi ekranları
+gezdiğinizi göndermez** — yalnızca çökmenin kendisi gider. Çökme raporları yalnızca
+mağazadan kurulan sürümden gönderilir.
 
 ## İzinler
 
