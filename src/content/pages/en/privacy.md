@@ -107,14 +107,32 @@ age group.
 
 ## This website
 
-The above describes the **app**. The site at `moneyagenda.com.tr` uses **Cloudflare Web
-Analytics** to measure how many people view which page.
+The above describes the **app**. The site at `moneyagenda.com.tr` uses two measurement
+tools, and they work differently.
 
-- It **sets no cookies** and stores nothing in your browser, which is why the site has no
-  cookie consent banner
+### Cloudflare Web Analytics — always on
+
+- It **sets no cookies** and stores nothing in your browser
 - It **does not fingerprint** you and does not track you across sites
 - What it collects is aggregated: page address, referrer, country, browser and device
   type. It does not identify a person
+
+### Google Analytics — only if you agree
+
+We use **Google Analytics 4** to understand how the site is used. GA4 uses cookies, so we
+ask for your consent first:
+
+- A consent banner appears on your first visit. **Decline and no cookie is set** and GA4
+  collects nothing; the site works exactly the same.
+- Your choice is stored in your browser and you are not asked again. To change it, clear
+  this site's data in your browser.
+- If you accept, what is measured is: page views, how far you scroll, clicks on links
+  that leave the site (such as the Google Play button), file downloads, on-site search,
+  approximate location (country/city from your IP), device and browser type, and where
+  you arrived from.
+
+Advertising cookies and ad personalisation are **off and stay off even if you accept** —
+there is no advertising on this site.
 
 **The calculators on the site run in your browser.** The amounts, rates and dates you
 enter are never sent to a server, and the analytics does not see them.

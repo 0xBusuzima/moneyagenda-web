@@ -36,7 +36,7 @@ export const SITE = {
    *
    * Kimlik gizli degil, sayfanin kaynagindan gorunuyor.
    */
-  ga4Id: '',
+  ga4Id: 'G-K0CMK42B44',
 } as const;
 
 export type Lang = 'tr' | 'en';

@@ -106,14 +106,32 @@ toplamaz.
 
 ## Bu web sitesi
 
-Yukarıdakiler **uygulama** içindir. `moneyagenda.com.tr` sitesinde kaç kişinin hangi
-sayfayı gördüğünü ölçmek için **Cloudflare Web Analytics** kullanılıyor.
+Yukarıdakiler **uygulama** içindir. `moneyagenda.com.tr` sitesinde iki ölçüm aracı
+kullanılıyor ve ikisi birbirinden farklı çalışıyor.
 
-- **Çerez koymaz** ve tarayıcınızda hiçbir şey saklamaz; bu yüzden sitede çerez onayı
-  penceresi yoktur
+### Cloudflare Web Analytics — her zaman açık
+
+- **Çerez koymaz** ve tarayıcınızda hiçbir şey saklamaz
 - **Parmak izi çıkarmaz**, sizi siteler arasında takip etmez
 - Toplanan şey sayfa adresi, yönlendiren adres, ülke, tarayıcı ve cihaz türü gibi
   toplulaştırılmış bilgidir — kişiyi tanımlamaz
+
+### Google Analytics — yalnızca siz onay verirseniz
+
+Siteyi nasıl kullandığınızı anlamak için **Google Analytics 4** kullanıyoruz. GA4
+çerez kullanır, bu yüzden önceden onayınızı istiyoruz:
+
+- Siteye ilk gelişinizde bir onay bandı çıkar. **Reddederseniz hiçbir çerez konmaz**
+  ve GA4 veri toplamaz; site aynen çalışır.
+- Kararınız tarayıcınızda saklanır, her ziyarette yeniden sorulmaz. Değiştirmek için
+  tarayıcınızın bu siteye ait verilerini temizlemeniz yeterli.
+- Kabul ederseniz ölçülenler: sayfa görüntülemeleri, sayfayı ne kadar aşağı
+  kaydırdığınız, siteden dışarı çıkan bağlantılara (örneğin Google Play düğmesi)
+  tıklamalarınız, dosya indirmeleri, site içi arama, yaklaşık konum (IP'den ülke/şehir),
+  cihaz ve tarayıcı türü ve siteye nereden geldiğiniz.
+
+Reklam çerezleri ve reklam kişiselleştirme **kapalıdır ve onay verseniz de açılmaz**;
+bu sitede reklam yok.
 
 **Sitedeki hesaplayıcılar tarayıcınızda çalışır.** Girdiğiniz tutarlar, oranlar ve
 tarihler hiçbir sunucuya gönderilmez; ölçüm de bunları görmez.
