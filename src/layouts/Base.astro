@@ -10,6 +10,7 @@ import '@fontsource-variable/jetbrains-mono';
 import '../styles/tokens.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import ConsentBanner from '../components/ConsentBanner.astro';
 import { SITE, LOCALE_TAG, ROUTES, absolute, t, type Lang, type RouteKey } from '../config';
 
 interface Props {
@@ -126,6 +127,45 @@ const graph = [
 
     <script type="application/ld+json" is:inline set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })} />
 
+    {
+      /*
+        Google Analytics 4 — yalnızca `SITE.ga4Id` doluysa.
+
+        **Sıra kritik:** Consent Mode varsayılanı `gtag.js`'ten önce çalışmak zorunda.
+        Sonra çalışsaydı GA4 ilk isteği onay sorulmadan gönderir ve bandın bir anlamı
+        kalmazdı. Bu yüzden satir içi betik `<head>`'de ve `async` olan GA4 betiginden
+        önce duruyor.
+
+        Varsayılan **reddedilmiş**: onay gelene kadar çerez konmuyor. `wait_for_update`
+        GA4'e "500 ms bekle, karar gelebilir" diyor — onayı önceden veren ziyaretçinin
+        ilk sayfa görüntülemesi kaybolmasin diye.
+
+        Reklam izinleri de reddedilmiş ve hiç güncellenmiyor: bu sitede reklam yok,
+        Google Ads bağlı değil. Beyan etmek, ileride biri etiketi eklerse varsayılanın
+        kapalı olmasını sağlıyor.
+      */
+    }
+    {
+      SITE.ga4Id && (
+        <>
+          <script is:inline set:html={`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('consent', 'default', {
+              analytics_storage: 'denied',
+              ad_storage: 'denied',
+              ad_user_data: 'denied',
+              ad_personalization: 'denied',
+              wait_for_update: 500
+            });
+            gtag('js', new Date());
+            gtag('config', '${SITE.ga4Id}', { anonymize_ip: true });
+          `} />
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${SITE.ga4Id}`}></script>
+        </>
+      )
+    }
+
     <slot name="head" />
   </head>
 
@@ -154,5 +194,7 @@ const graph = [
       src="https://static.cloudflareinsights.com/beacon.min.js"
       data-cf-beacon={`{"token": "${SITE.analyticsToken}"}`}
     ></script>
+
+    <ConsentBanner lang={lang} />
   </body>
 </html>

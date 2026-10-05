@@ -23,6 +23,20 @@ export const SITE = {
    * hangi siteye ait" bilgisini tasiyor.
    */
   analyticsToken: '89742761001c4b7280648fdc4b3b6e25',
+  /**
+   * Google Analytics 4 olcum kimligi (`G-XXXXXXXXXX`).
+   *
+   * **Bos oldugu surece GA4 hic yuklenmiyor** ve cerez onay bandi gorunmuyor: kimlik
+   * olmadan betigi yuklemek hem anlamsiz hem de bos yere cerez izni istemek olurdu.
+   * Kimlik girildigi anda ikisi birlikte devreye giriyor.
+   *
+   * Cloudflare Web Analytics kaldirilmadi. Sebebi: cerezsiz oldugu icin onay
+   * reddedildiginde de olcmeye devam ediyor, yani elimizde her zaman bir taban kaliyor.
+   * GA4 yalnizca onay verildiginde veri topluyor.
+   *
+   * Kimlik gizli degil, sayfanin kaynagindan gorunuyor.
+   */
+  ga4Id: '',
 } as const;
 
 export type Lang = 'tr' | 'en';
@@ -91,6 +105,15 @@ export const UI: Record<Lang, Record<string, string>> = {
     read_more: 'Yazının tamamı',
     all_posts: 'Tüm yazılar',
     related: 'İlgili',
+    consent_title: 'Çerezler',
+    consent_body:
+      'Siteyi nasıl kullandığınızı anlamak için Google Analytics kullanmak istiyoruz. ' +
+      'Bu çerez gerektiriyor ve tamamen size bağlı: reddederseniz hiçbir çerez konmaz, ' +
+      'site aynen çalışır. Finansal verinizle ilgisi yok — uygulamadaki kayıtlarınız ' +
+      'bu siteye hiç gelmiyor.',
+    consent_accept: 'Kabul et',
+    consent_reject: 'Reddet',
+    consent_more: 'Gizlilik politikası',
   },
   en: {
     skip: 'Skip to content',
@@ -116,6 +139,15 @@ export const UI: Record<Lang, Record<string, string>> = {
     read_more: 'Read the full post',
     all_posts: 'All posts',
     related: 'Related',
+    consent_title: 'Cookies',
+    consent_body:
+      'We would like to use Google Analytics to understand how the site is used. ' +
+      'That needs cookies and it is entirely your choice: decline and no cookie is ' +
+      'set, the site works exactly the same. It has nothing to do with your financial ' +
+      'data — the records in the app never reach this site.',
+    consent_accept: 'Accept',
+    consent_reject: 'Decline',
+    consent_more: 'Privacy policy',
   },
 };
 

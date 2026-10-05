@@ -1,0 +1,199 @@
+---
+/**
+ * Çerez onay bandı — yalnızca GA4 kimliği tanımlıysa görünüyor.
+ *
+ * Neden var: Cloudflare Web Analytics çerezsiz olduğu için site bugüne kadar bandsız
+ * durabiliyordu. GA4 çerez kullanıyor, yani AEA/BK ziyaretçisi için **önceden onay**
+ * gerekiyor. Band olmadan GA4 eklemek gizlilik politikasıyla da çelişirdi.
+ *
+ * Nasıl çalışıyor: Consent Mode v2 varsayılanı **reddedilmiş**. Yani onay verilene
+ * kadar GA4 çerez koymuyor ve kimlik taşıyan istek göndermiyor. Karar `localStorage`'da
+ * saklanıyor; ikinci ziyarette band görünmüyor.
+ *
+ * Reddedildiğinde ölçüm tamamen kaybolmuyor: Cloudflare çerezsiz olduğu için çalışmaya
+ * devam ediyor. Band bu yüzden "kabul et yoksa ölçemeyiz" baskısı kurmuyor.
+ *
+ * Betik `is:inline` **ve** `set:html`: `is:inline` Astro'nun paketleyicisini atlatıyor
+ * (`<head>`'deki consent varsayılanıyla aynı `gtag` kuyruğunu kullanması gerekiyor),
+ * `set:html` ise içeriği ham metin olarak basıyor.
+ *
+ * İlk denemede betik `<script is:inline>{`...`}</script>` biçiminde yazılmıştı ve
+ * **hiç koşmadı**: `is:inline` ifadeyi değerlendirmediği için `{` ve ters tırnak
+ * harfi harfine sayfaya basıldı, tüm fonksiyon değerlendirilmeyen bir şablon
+ * dizesine dönüştü. Hata vermedi, band yalnızca hiç görünmedi — tarayıcıda
+ * denenmeseydi fark edilmezdi.
+ */
+import { SITE, t, type Lang } from '../config';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const privacyHref = lang === 'tr' ? '/gizlilik/' : '/en/privacy/';
+---
+
+{
+  SITE.ga4Id && (
+    <div id="consent" class="consent" hidden data-nosnippet>
+      <div class="consent__inner">
+        <div class="consent__text">
+          <p class="consent__title">{t(lang, 'consent_title')}</p>
+          <p class="consent__body">
+            {t(lang, 'consent_body')}{' '}
+            <a href={privacyHref}>{t(lang, 'consent_more')}</a>
+          </p>
+        </div>
+        <div class="consent__actions">
+          <button type="button" id="consent-reject" class="consent__btn consent__btn--ghost">
+            {t(lang, 'consent_reject')}
+          </button>
+          <button type="button" id="consent-accept" class="consent__btn consent__btn--solid">
+            {t(lang, 'consent_accept')}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+{
+  SITE.ga4Id && (
+    <script
+      is:inline
+      set:html={`
+      (function () {
+        var KEY = 'ma-consent';
+        var band = document.getElementById('consent');
+        if (!band) return;
+
+        function gtag() { window.dataLayer.push(arguments); }
+
+        function uygula(karar) {
+          gtag('consent', 'update', {
+            analytics_storage: karar === 'accept' ? 'granted' : 'denied',
+          });
+        }
+
+        var kayitli = null;
+        try { kayitli = localStorage.getItem(KEY); } catch (e) { /* ozel pencere */ }
+
+        if (kayitli === 'accept' || kayitli === 'reject') {
+          uygula(kayitli);
+          return;
+        }
+
+        band.hidden = false;
+
+        function karar(deger) {
+          try { localStorage.setItem(KEY, deger); } catch (e) { /* yoksay */ }
+          uygula(deger);
+          band.hidden = true;
+        }
+
+        document.getElementById('consent-accept').addEventListener('click', function () {
+          karar('accept');
+        });
+        document.getElementById('consent-reject').addEventListener('click', function () {
+          karar('reject');
+        });
+      })();
+      `}
+    />
+  )
+}
+
+<style>
+  .consent {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 50;
+    padding: var(--space-l) var(--gutter) calc(var(--space-l) + env(safe-area-inset-bottom));
+    background: var(--surface-elevated);
+    border-top: 1px solid var(--divider);
+    box-shadow: 0 -8px 32px rgb(0 0 0 / 12%);
+  }
+
+  .consent__inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-l);
+    align-items: center;
+    justify-content: space-between;
+    max-width: var(--page-max);
+    margin-inline: auto;
+  }
+
+  .consent__text {
+    flex: 1 1 32ch;
+    min-width: 0;
+  }
+
+  .consent__title {
+    margin: 0 0 var(--space-xs);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .consent__body {
+    max-width: 72ch;
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--ink-muted);
+  }
+
+  .consent__body a {
+    color: var(--accent);
+    text-underline-offset: 2px;
+  }
+
+  .consent__actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: var(--space-s);
+  }
+
+  .consent__btn {
+    padding: 10px 18px;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-pill);
+    transition: background-color 120ms ease, border-color 120ms ease;
+  }
+
+  .consent__btn--solid {
+    color: var(--on-ink);
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .consent__btn--ghost {
+    color: var(--ink);
+    background: transparent;
+  }
+
+  .consent__btn--ghost:hover {
+    background: var(--surface-variant);
+  }
+
+  .consent__btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (width <= 540px) {
+    .consent__actions {
+      width: 100%;
+    }
+
+    .consent__btn {
+      flex: 1;
+    }
+  }
+</style>
