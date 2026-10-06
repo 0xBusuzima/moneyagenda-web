@@ -8,6 +8,15 @@
  *
  * Form işaretlemesi `<form>` içinde ve alanlar gerçek `<label>` taşıyor: betik
  * yüklenmezse bile sayfa okunabilir kalır ve ekran okuyucu alanları adlandırabilir.
+ *
+ * Formun `action`'ı yok, yani Enter'a basıldığında tarayıcı varsayılan olarak sayfayı
+ * kendine GET'liyor: sayfa yeniden yükleniyor ve **kullanıcının girdiği değerler
+ * siliniyor.** Aşağıdaki betik bunu engelliyor. 2026-10-06'da canlı sitede yakalandı.
+ *
+ * Değerlerin URL'ye sızmadığı ayrıca doğrulandı: alanlarda `name` yok, HTML'de yalnızca
+ * `name` taşıyan kontroller gönderiliyor. Bu önemli çünkü GA4 sayfa adresini sorgu
+ * dizesiyle birlikte kaydediyor ve gizlilik politikası "ölçüm bunları görmez" diyor.
+ * Alanlara `name` eklenirse bu cümle yalan olur.
  */
 import Base from './Base.astro';
 import { SITE, absolute, ROUTES } from '../config';
@@ -66,6 +75,16 @@ const schema = [
   <div class="wrap explain prose">
     <slot />
   </div>
+
+  <script>
+    /*
+     * Enter'a basınca form kendini GET'lemesin: sayfa yeniden yüklenir ve girilen
+     * değerler kaybolur. Hesap zaten `input` olayında anında yapılıyor, gönderime gerek yok.
+     */
+    document.querySelectorAll('form').forEach((form) => {
+      form.addEventListener('submit', (olay) => olay.preventDefault());
+    });
+  </script>
 </Base>
 
 <style is:global>
