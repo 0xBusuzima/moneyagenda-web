@@ -1,21 +1,36 @@
 ---
 title: "Gelir gider takibi: defter tutmadan sürdürülebilir yöntem"
 seoTitle: Gelir gider takibi nasıl yapılır — sürdürülebilir yöntem
-description: Her kuruşu kaydetmek iki hafta sürer ve biter. Takibi sürdürülebilir kılan şey eksiksizlik değil, doğru şeyi kaydetmek.
+description: Her kuruşu kaydetmek iki hafta sürer ve biter. Takibi sürdürülebilir kılan şey eksiksizlik değil, önce yükümlülükleri girip harcamaları kaba tutmak.
 lang: tr
 slug: gelir-gider-takibi-yontem
 published: 2026-09-26
+updated: 2026-10-16
 related:
   - label: Zamlı bir yılda aylık bütçe
     href: /blog/zamli-yilda-butce/
   - label: Bütçe ve rapor
     href: /ozellikler/butce-ve-rapor/
+  - label: Unutulan abonelikler
+    href: /blog/unutulan-abonelikler/
 ---
 
 Gelir gider takibi denemelerinin çoğu aynı şekilde biter: ilk iki hafta her kuruş
 kaydedilir, üçüncü hafta birkaç gün atlanır, dördüncü hafta uygulama silinir.
 
 Sebep tembellik değil. Yöntem sürdürülemez.
+
+## Kısa cevap
+
+Sıralamayı tersine çevirin:
+
+1. **Yükümlülükleri bir kez girin** — kart kesim günleri, taksitler, krediler,
+   abonelikler. Günlük emek istemez, en çok parayı burası kurtarır.
+2. **Harcamaları kaba tutun** — dört-beş kategori, günde bir dakika.
+3. **Kaçırdığınız günü telafi etmeye çalışmayın.** Eksik takip, hiç takipten iyidir.
+
+Günde 8-10 kayıt tutmayı hedefleyen her yöntem üçüncü haftada çöküyor. Hedef eksiksizlik
+değil, **devam edebilmek**.
 
 ## Eksiksizlik hedefi yanlış hedef
 
@@ -26,6 +41,11 @@ Takibin asıl değeri başka yerde: **ne zaman ne ödeyeceğinizi bilmekte.** Ka
 günü, taksitin düşeceği ay, aboneliğin yenileneceği tarih. Bunlar unutulduğunda gerçek
 para kaybedilir — gecikme faizi, düşen alan adı, kaçırılan ödeme.
 
+Aradaki farkı bir örnekle koyalım. Market harcamanızın 2.400 değil 2.600 TL olduğunu
+öğrenmek hiçbir karar değiştirmez. Kart son ödemesinin yarın olduğunu öğrenmek, bir
+gecikme faizini ve kredi notunuza düşecek bir kaydı önler. İkisi aynı emeği istemiyor
+ama aynı değerde de değil.
+
 ## Önce yükümlülükler, sonra harcamalar
 
 Sıralamayı tersine çevirin:
@@ -33,6 +53,11 @@ Sıralamayı tersine çevirin:
 **1. Yükümlülükleri bir kez girin.** Kartların kesim ve son ödeme günleri, kredi ve
 taksitler, abonelikler, sigortalar. Bunlar bir kez girilir ve kendi kendine ilerler.
 Günlük emek istemez ama en çok parayı burası kurtarır.
+
+Kart tarafında girilecek iki tarih var ve ikisi de ekstrenizde yazıyor —
+[hangisinin ne anlama geldiği](/blog/kredi-karti-kesim-tarihi-nedir/) ayrı bir yazıda.
+Abonelik tarafında ise 12 aylık ekstreyi taramak gerekiyor, çünkü
+[yılda bir ödenenler](/blog/unutulan-abonelikler/) üç aylık bir taramada görünmüyor.
 
 **2. Sabit gelirleri girin.** Maaş, kira geliri. Bunlar da bir kez.
 
@@ -48,6 +73,10 @@ Akşam, telefonu bırakmadan önce. Bir dakika sürer.
 Kaçırdığınız günü telafi etmeye çalışmayın. Geriye dönük üç günü hatırlamaya çalışmak,
 takibi bırakmanın en yaygın sebebidir. Kaçırdıysanız o günü atlayın ve devam edin —
 eksik bir takip, hiç takipten sonsuz kat iyidir.
+
+Bunun bir sebebi daha var: ay sonu tahmini **90 günlük ortalamaya** dayandığında, bir
+günün eksik olması sonucu neredeyse hiç değiştirmez. Tek güne hassas olan bir yöntem
+baştan kırılgandır.
 
 ## Nakit için ayrı bir yöntem
 
@@ -66,6 +95,16 @@ Ay sonunda üç sayı yeter:
 Üçüncüsü en değerlisi ve çoğu uygulamada en zor bulunanıdır — çünkü çoğu uygulama
 geçmişe bakar.
 
+Üçüncü sayının hesabı şöyle kurulur:
+
+> gerçekleşen gider + planlanan (taksit, kredi, abonelik) +
+> kalan gün × son 90 günün günlük ortalaması
+
+Birinci adımda girdiğiniz yükümlülükler, bu formülün **"planlanan"** kısmını besliyor.
+Yani yükümlülükleri bir kez girmenin karşılığı yalnızca hatırlatma değil: ay sonu
+tahmininin işe yarar olması. Formülün tamamı
+[bütçe yazısında](/blog/zamli-yilda-butce/) açıklanıyor.
+
 ## Ne zaman detaya inmeli
 
 Detaylı kategori takibi bir soruya cevap ararken anlamlıdır: "Yeme-içme gerçekten bu
@@ -82,5 +121,7 @@ Sürekli detay, sürekli emek demektir ve emek biter.
 - Ay sonunda üç sayıya bak, en önemlisi "sırada ne var"
 
 Bu yöntemin işe yaraması için özel bir uygulama gerekmiyor; bir kâğıt da olur. Ama
-yükümlülük tarafını hatırlatan bir şey kullanmak, kaçırılan ödemelerin önüne geçer —
-[Money Agenda](/) tam olarak bunun için var.
+yükümlülük tarafını hatırlatan bir şey kullanmak, kaçırılan ödemelerin önüne geçer.
+[Bildirimler](/ozellikler/bildirimler/) sayfasında hangi yükümlülük için kaç gün önceden
+hatırlatıldığı, [bütçe ve rapor](/ozellikler/butce-ve-rapor/) sayfasında ise ay sonu
+tahmininin nasıl gösterildiği anlatılıyor.
